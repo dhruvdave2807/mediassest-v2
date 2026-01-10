@@ -1,0 +1,7 @@
+{
+  "name": "MediAssest",
+  "description": "A modern, AI-powered healthcare application for medical record storage, analysis, and personalized health guidance.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
