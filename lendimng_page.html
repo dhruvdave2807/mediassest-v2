@@ -52,12 +52,9 @@
 
         /* Subtle Pulse for AI elements */
         @keyframes subtle-pulse {
-
-            0%,
-            100% {
+            0%, 100% {
                 opacity: 1;
             }
-
             50% {
                 opacity: 0.7;
             }
@@ -65,6 +62,62 @@
 
         .ai-status-pulse {
             animation: subtle-pulse 2s infinite;
+        }
+
+        /* Button Animations */
+        @keyframes button-pulse {
+            0%, 100% {
+                box-shadow: 0 10px 25px -5px rgba(14, 165, 233, 0.3);
+            }
+            50% {
+                box-shadow: 0 10px 35px -5px rgba(14, 165, 233, 0.5);
+            }
+        }
+
+        .animate-button-pulse {
+            animation: button-pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes button-glow {
+            0%, 100% {
+                box-shadow: 0 10px 25px -5px rgba(255, 255, 255, 0.3);
+            }
+            50% {
+                box-shadow: 0 10px 35px -5px rgba(255, 255, 255, 0.5);
+            }
+        }
+
+        .animate-button-glow {
+            animation: button-glow 2s ease-in-out infinite;
+        }
+
+        @keyframes arrow-slide {
+            0% {
+                transform: translateX(0);
+            }
+            50% {
+                transform: translateX(5px);
+            }
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        .animate-arrow-slide {
+            animation: arrow-slide 1.5s ease-in-out infinite;
+        }
+
+        /* Enhanced button hover effects */
+        button, a[href^="#"] {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        button:hover, a[href^="#"]:hover {
+            transform: translateY(-2px);
+        }
+
+        button:active, a[href^="#"]:active {
+            transform: translateY(0) scale(0.98);
         }
 
         .hero-gradient {
@@ -113,8 +166,8 @@
                     <a href="#features" class="hover:text-sky-500 transition-colors">Features</a>
                     <a href="#analytics" class="hover:text-sky-500 transition-colors">Analytics</a>
                     <a href="#security" class="hover:text-sky-500 transition-colors">Security</a>
-                    <button
-                        class="bg-sky-500 text-white px-7 py-3 rounded-xl hover:bg-sky-600 transition shadow-lg shadow-sky-200 active:scale-95">
+                    <button onclick="handleGetStarted()"
+                        class="bg-sky-500 text-white px-7 py-3 rounded-xl hover:bg-sky-600 transition-all transform hover:scale-105 active:scale-95 shadow-lg shadow-sky-200">
                         Get Started
                     </button>
                 </div>
@@ -151,14 +204,13 @@
                         early health risks using advanced clinical AI.
                     </p>
                     <div class="flex flex-col sm:flex-row gap-5">
-                        <button
-                            class="flex items-center justify-center gap-3 bg-slate-900 text-white px-10 py-5 rounded-2xl hover:bg-slate-800 transition-all transform hover:-translate-y-1 shadow-xl">
-                            <span class="text-lg font-bold">Get Started Now</span>
-                            <i data-lucide="arrow-right" class="w-5 h-5"></i>
-                        </button>
-                        <button
-                            class="flex items-center justify-center gap-3 bg-white border border-slate-200 text-slate-700 px-10 py-5 rounded-2xl hover:border-sky-300 hover:bg-sky-50 transition-all transform hover:-translate-y-1 shadow-md">
-                            <i data-lucide="play-circle" class="w-6 h-6 text-sky-500"></i>
+                        <a href="#get-started" class="flex items-center justify-center gap-3 bg-sky-500 text-white px-10 py-5 rounded-2xl hover:bg-sky-600 transition-all transform hover:-translate-y-1 hover:scale-105 active:scale-95 shadow-xl font-black animate-button-pulse">
+                            <span class="text-lg">Get Started Now</span>
+                            <i data-lucide="arrow-right" class="w-5 h-5 animate-arrow-slide"></i>
+                        </a>
+                        <button onclick="handleWatchDemo()"
+                            class="flex items-center justify-center gap-3 bg-white border border-slate-200 text-slate-700 px-10 py-5 rounded-2xl hover:border-sky-300 hover:bg-sky-50 transition-all transform hover:-translate-y-1 hover:scale-105 active:scale-95 shadow-md group">
+                            <i data-lucide="play-circle" class="w-6 h-6 text-sky-500 group-hover:scale-110 transition-transform"></i>
                             <span class="text-lg font-semibold">Watch Demo</span>
                         </button>
                     </div>
@@ -349,7 +401,7 @@
     </section>
 
     <!-- Final CTA -->
-    <section class="py-32 relative overflow-hidden">
+    <section id="get-started" class="py-32 relative overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="zoom-in">
             <div
                 class="bg-gradient-to-br from-sky-600 to-blue-700 p-16 rounded-[3rem] shadow-2xl relative overflow-hidden group">
@@ -364,12 +416,12 @@
                     Stop fearing your medical records. Start using them to live longer, better, and smarter.
                 </p>
                 <div class="flex flex-col sm:flex-row justify-center gap-6 relative z-10">
-                    <button
-                        class="bg-white text-sky-600 px-12 py-5 rounded-[1.5rem] font-black text-lg hover:bg-sky-50 transition shadow-xl transform hover:scale-105 active:scale-95">
+                    <button onclick="handleGetStarted()"
+                        class="bg-white text-sky-600 px-12 py-5 rounded-[1.5rem] font-black text-lg hover:bg-sky-50 transition-all shadow-xl transform hover:scale-105 hover:-translate-y-1 active:scale-95 animate-button-glow">
                         GET STARTED NOW
                     </button>
-                    <button
-                        class="bg-sky-500/20 backdrop-blur-md border-2 border-white/30 text-white px-12 py-5 rounded-[1.5rem] font-black text-lg hover:bg-white/10 transition transform hover:scale-105 active:scale-95">
+                    <button onclick="handleContactSales()"
+                        class="bg-sky-500/20 backdrop-blur-md border-2 border-white/30 text-white px-12 py-5 rounded-[1.5rem] font-black text-lg hover:bg-white/10 hover:border-white/50 transition-all transform hover:scale-105 hover:-translate-y-1 active:scale-95">
                         CONTACT SALES
                     </button>
                 </div>
@@ -436,20 +488,87 @@
     </footer>
 
     <script>
+        // Button handlers
+        function handleGetStarted() {
+            // Smooth scroll to get started section
+            const section = document.getElementById('get-started');
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                // If section doesn't exist, you can redirect to login or another page
+                alert('Redirecting to login...');
+                // window.location.href = '/login'; // Uncomment and adjust as needed
+            }
+        }
+
+        function handleWatchDemo() {
+            // Add demo video functionality
+            alert('Demo video will open here. Replace with actual video modal or link.');
+            // Example: window.open('https://youtube.com/watch?v=...', '_blank');
+            // Or show a modal with video
+        }
+
+        function handleContactSales() {
+            // Add contact sales functionality
+            const email = 'sales@mediassest.com';
+            window.location.href = `mailto:${email}?subject=Contact Sales - MediAssest`;
+        }
+
         window.onload = function () {
             // Initialize Lucide icons
             if (typeof lucide !== 'undefined') {
                 lucide.createIcons();
             }
 
-            // Initialize AOS
+            // Initialize AOS with enhanced settings
             if (typeof AOS !== 'undefined') {
                 AOS.init({
                     once: false,
                     mirror: true,
-                    duration: 800
+                    duration: 1000,
+                    easing: 'ease-out-cubic',
+                    offset: 100,
+                    delay: 0
                 });
             }
+
+            // Add smooth scroll behavior to all anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    const href = this.getAttribute('href');
+                    if (href !== '#' && href !== '') {
+                        e.preventDefault();
+                        const target = document.querySelector(href);
+                        if (target) {
+                            target.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'start'
+                            });
+                        }
+                    }
+                });
+            });
+
+            // Add intersection observer for scroll animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            // Observe all feature cards and sections
+            document.querySelectorAll('.feature-card, section').forEach(el => {
+                el.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+                observer.observe(el);
+            });
         };
     </script>
 </body>
