@@ -72,6 +72,66 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #7dd3fc;
         }
+        /* Floating action button (FAB) - visible on all sizes */
+        .fab-wrap {
+            position: fixed;
+            right: 20px;
+            bottom: 24px;
+            z-index: 60;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 12px;
+        }
+        .fab-main {
+            width: 56px;
+            height: 56px;
+            border-radius: 9999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg,var(--medical-blue),#3b82f6);
+            color: white;
+            box-shadow: 0 10px 24px rgba(14,165,233,0.18);
+            cursor: pointer;
+            transition: transform .15s ease, box-shadow .15s ease;
+        }
+        .fab-main:active { transform: scale(.96); }
+        .fab-menu {
+            display: none;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+        .fab-menu.open { display: flex; }
+        .fab-item {
+            background: white;
+            color: var(--deep-navy);
+            padding: 10px 14px;
+            border-radius: 9999px;
+            box-shadow: 0 8px 20px rgba(2,6,23,0.08);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            text-decoration: none;
+        }
+        .fab-label { font-size: 14px; }
+
+        @media (min-width: 768px) {
+            .fab-wrap { right: 32px; bottom: 32px; }
+            .fab-item { padding: 8px 12px; }
+        }
+
+        .fab-item.active {
+            background: linear-gradient(90deg,var(--medical-blue),#3b82f6);
+            color: white;
+            box-shadow: 0 12px 30px rgba(14,165,233,0.18);
+            transform: translateX(-4px);
+        }
+
+        nav a.active { color: var(--medical-blue); font-weight: 800; }
     </style>
 </head>
 <body class="bg-[#f8fafc] text-slate-900 antialiased overflow-x-hidden">
@@ -182,6 +242,7 @@
                                 <i data-lucide="heart" class="text-rose-500 w-6 h-6"></i>
                             </div>
                             <div>
+                       
                                 <p class="text-[10px] text-slate-400 font-bold uppercase">Resting BPM</p>
                                 <p class="text-xl font-black text-slate-800">72</p>
                             </div>
@@ -294,6 +355,40 @@
         </div>
     </section>
 
+    <!-- Security Section -->
+    <section id="security" class="py-24 bg-white border-t border-slate-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16" data-aos="fade-up">
+                <h2 class="text-sky-500 font-black tracking-widest uppercase text-xs mb-4">Security</h2>
+                <h3 class="text-4xl lg:text-5xl font-extrabold text-slate-900 mb-6">Privacy-First by Design</h3>
+                <p class="text-slate-600 text-lg">We protect your medical assets with end-to-end encryption, zero-knowledge storage, and configurable sharing controls.</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-10">
+                <div class="feature-card p-10 rounded-[2rem] bg-sky-50 border border-sky-100 transition-all duration-500" data-aos="fade-up" data-aos-delay="100">
+                    <div class="w-16 h-16 bg-sky-100 rounded-2xl flex items-center justify-center mb-8">
+                        <i data-lucide="lock" class="text-sky-600 w-8 h-8"></i>
+                    </div>
+                    <h4 class="text-2xl font-bold mb-4">End-to-End Encryption</h4>
+                    <p class="text-slate-600 leading-relaxed">Only you hold the keys to your data; files are encrypted client-side before upload.</p>
+                </div>
+                <div class="feature-card p-10 rounded-[2rem] bg-emerald-50 border border-emerald-100 transition-all duration-500" data-aos="fade-up" data-aos-delay="200">
+                    <div class="w-16 h-16 bg-emerald-100 rounded-2xl flex items-center justify-center mb-8">
+                        <i data-lucide="shield" class="text-emerald-600 w-8 h-8"></i>
+                    </div>
+                    <h4 class="text-2xl font-bold mb-4">Zero-Knowledge Storage</h4>
+                    <p class="text-slate-600 leading-relaxed">Even if infrastructure is compromised, encrypted assets remain inaccessible without your key.</p>
+                </div>
+                <div class="feature-card p-10 rounded-[2rem] bg-violet-50 border border-violet-100 transition-all duration-500" data-aos="fade-up" data-aos-delay="300">
+                    <div class="w-16 h-16 bg-violet-100 rounded-2xl flex items-center justify-center mb-8">
+                        <i data-lucide="share-2" class="text-violet-600 w-8 h-8"></i>
+                    </div>
+                    <h4 class="text-2xl font-bold mb-4">Granular Sharing</h4>
+                    <p class="text-slate-600 leading-relaxed">Share only what you want for a limited time with audit logs for full transparency.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Final CTA -->
     <section class="py-32 relative overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="zoom-in">
@@ -367,13 +462,34 @@
         </div>
     </footer>
 
+    <!-- Floating Action Buttons (visible on all devices) -->
+    <div class="fab-wrap" id="fabWrap" aria-hidden="false">
+        <div class="fab-menu" id="fabMenu" aria-hidden="true">
+            <a class="fab-item" href="#features" data-target="features">
+                <i data-lucide="grid" class="w-4 h-4"></i>
+                <span class="fab-label">Features</span>
+            </a>
+            <a class="fab-item" href="#analytics" data-target="analytics">
+                <i data-lucide="bar-chart" class="w-4 h-4"></i>
+                <span class="fab-label">Analytics</span>
+            </a>
+            <a class="fab-item" href="#security" data-target="security">
+                <i data-lucide="shield" class="w-4 h-4"></i>
+                <span class="fab-label">Security</span>
+            </a>
+        </div>
+        <button class="fab-main" id="fabToggle" aria-expanded="false" aria-controls="fabMenu">
+            <i data-lucide="more-vertical" class="w-5 h-5"></i>
+        </button>
+    </div>
+
     <script>
-        window.onload = function() {
+        document.addEventListener('DOMContentLoaded', function() {
             // Initialize Lucide icons
             if (typeof lucide !== 'undefined') {
                 lucide.createIcons();
             }
-            
+
             // Initialize AOS
             if (typeof AOS !== 'undefined') {
                 AOS.init({
@@ -382,7 +498,128 @@
                     duration: 800
                 });
             }
-        };
+
+            // FAB behavior - Enhanced for 100% accuracy
+            var fabToggle = document.getElementById('fabToggle');
+            var fabMenu = document.getElementById('fabMenu');
+            var fabWrap = document.getElementById('fabWrap');
+            var fabItems = document.querySelectorAll('.fab-item');
+            var navLinks = document.querySelectorAll('nav a[href^="#"]');
+            var sectionIds = ['features', 'analytics', 'security'];
+
+            function closeFab() {
+                fabMenu.classList.remove('open');
+                fabMenu.setAttribute('aria-hidden', 'true');
+                fabToggle.setAttribute('aria-expanded', 'false');
+            }
+
+            function openFab() {
+                fabMenu.classList.add('open');
+                fabMenu.setAttribute('aria-hidden', 'false');
+                fabToggle.setAttribute('aria-expanded', 'true');
+            }
+
+            function setActiveSection(sectionId) {
+                // Remove active from all FAB items and nav links
+                fabItems.forEach(function(item) {
+                    item.classList.remove('active');
+                });
+                navLinks.forEach(function(link) {
+                    link.classList.remove('active');
+                });
+
+                // Add active to matching FAB item and nav link
+                fabItems.forEach(function(item) {
+                    if (item.getAttribute('data-target') === sectionId) {
+                        item.classList.add('active');
+                    }
+                });
+                navLinks.forEach(function(link) {
+                    if (link.getAttribute('href') === '#' + sectionId) {
+                        link.classList.add('active');
+                    }
+                });
+            }
+
+            // FAB toggle button
+            if (fabToggle) {
+                fabToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    if (fabMenu.classList.contains('open')) {
+                        closeFab();
+                    } else {
+                        openFab();
+                    }
+                });
+            }
+
+            // Close FAB when clicking outside
+            document.addEventListener('click', function(e) {
+                if (fabWrap && !fabWrap.contains(e.target)) {
+                    closeFab();
+                }
+            });
+
+            // Close FAB on escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeFab();
+                }
+            });
+
+            // FAB items click handler
+            fabItems.forEach(function(item) {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    var targetId = this.getAttribute('data-target');
+                    var targetEl = document.getElementById(targetId);
+                    
+                    if (targetEl) {
+                        // Smooth scroll to section
+                        targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        // Set active state immediately
+                        setActiveSection(targetId);
+                    }
+                    
+                    // Close the menu after selection
+                    closeFab();
+                });
+            });
+
+            // Nav links click handler
+            navLinks.forEach(function(link) {
+                link.addEventListener('click', function(e) {
+                    var targetId = this.getAttribute('href').substring(1); // Remove #
+                    setActiveSection(targetId);
+                    closeFab();
+                });
+            });
+
+            // IntersectionObserver for scroll-based active highlighting
+            if ('IntersectionObserver' in window) {
+                var options = {
+                    root: null,
+                    rootMargin: '-40% 0px -50% 0px',
+                    threshold: 0
+                };
+
+                var observer = new IntersectionObserver(function(entries) {
+                    entries.forEach(function(entry) {
+                        if (entry.isIntersecting) {
+                            setActiveSection(entry.target.id);
+                        }
+                    });
+                }, options);
+
+                // Observe all sections
+                sectionIds.forEach(function(id) {
+                    var section = document.getElementById(id);
+                    if (section) {
+                        observer.observe(section);
+                    }
+                });
+            }
+        });
     </script>
 </body>
 </html>
