@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Calendar, ChevronRight, Activity } from 'lucide-react';
+import { User, Calendar, ChevronRight, Activity, ArrowLeft, Heart, Sparkles } from 'lucide-react';
 import { UserProfile } from '../types';
 
 interface SignUpScreenProps {
@@ -32,42 +32,46 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ onSignUp }) => {
     };
 
     return (
-        <div className="h-full bg-white flex flex-col p-8 pt-16 overflow-y-auto">
-            <div className="mb-10">
-                <div className="bg-teal-500 w-12 h-12 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-teal-200">
-                    <Activity className="text-white" size={24} />
+        <div className="h-full bg-white flex flex-col hero-gradient px-8 min-h-screen overflow-y-auto">
+            <div className="pt-12 mb-10 flex flex-col items-center text-center">
+                <div className="w-16 h-16 medical-gradient rounded-2xl flex items-center justify-center mb-6 shadow-xl shadow-teal-500/20">
+                    <Activity size={32} className="text-white" />
                 </div>
-                <h2 className="text-3xl font-bold text-slate-800 mb-2">Create Account</h2>
-                <p className="text-slate-500 text-sm">Join MediAssest to manage your medical vault with AI.</p>
+                <h2 className="text-4xl font-black text-slate-900 mb-2 tracking-tight">Create Profile</h2>
+                <p className="text-lg text-slate-500 font-medium">Let's personalize your healthcare journey.</p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-5">
-                <div className="space-y-2">
-                    <label className="text-sm font-semibold text-slate-600 ml-1">Full Name</label>
-                    <div className="relative">
-                        <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+            <form onSubmit={handleSubmit} className="space-y-6 pb-20">
+                <div className="space-y-3">
+                    <label className="text-sm font-black text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
+                    <div className="relative group">
+                        <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-teal-600 transition-colors">
+                            <User size={24} />
+                        </div>
                         <input
                             type="text"
                             required
-                            className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-teal-500 outline-none transition-all"
-                            placeholder="e.g. John Doe"
+                            className="w-full pl-14 pr-6 py-5 bg-white border-2 border-slate-100 rounded-3xl focus:border-teal-500/50 focus:bg-white outline-none transition-all shadow-sm text-lg font-bold"
+                            placeholder="e.g. Robert Wilson"
                             value={formData.name}
                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         />
                     </div>
                 </div>
 
-                <div className="space-y-2">
-                    <label className="text-sm font-semibold text-slate-600 ml-1">Age</label>
-                    <div className="relative">
-                        <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+                <div className="space-y-3">
+                    <label className="text-sm font-black text-slate-400 uppercase tracking-widest ml-1">Age</label>
+                    <div className="relative group">
+                        <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-teal-600 transition-colors">
+                            <Calendar size={24} />
+                        </div>
                         <input
                             type="number"
                             required
                             min="1"
                             max="120"
-                            className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-teal-500 outline-none transition-all"
-                            placeholder="e.g. 25"
+                            className="w-full pl-14 pr-6 py-5 bg-white border-2 border-slate-100 rounded-3xl focus:border-teal-500/50 focus:bg-white outline-none transition-all shadow-sm text-lg font-bold"
+                            placeholder="How old are you?"
                             value={formData.age}
                             onChange={(e) => setFormData({ ...formData, age: e.target.value })}
                         />
@@ -75,10 +79,10 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ onSignUp }) => {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                        <label className="text-sm font-semibold text-slate-600 ml-1">Gender</label>
+                    <div className="space-y-3">
+                        <label className="text-sm font-black text-slate-400 uppercase tracking-widest ml-1">Gender</label>
                         <select
-                            className="w-full px-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-teal-500 outline-none transition-all"
+                            className="w-full px-6 py-5 bg-white border-2 border-slate-100 rounded-3xl focus:border-teal-500/50 outline-none transition-all shadow-sm text-lg font-bold appearance-none cursor-pointer"
                             value={formData.gender}
                             onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
                         >
@@ -87,10 +91,10 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ onSignUp }) => {
                             <option value="Other">Other</option>
                         </select>
                     </div>
-                    <div className="space-y-2">
-                        <label className="text-sm font-semibold text-slate-600 ml-1">Blood Type</label>
+                    <div className="space-y-3">
+                        <label className="text-sm font-black text-slate-400 uppercase tracking-widest ml-1">Blood Type</label>
                         <select
-                            className="w-full px-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-teal-500 outline-none transition-all"
+                            className="w-full px-6 py-5 bg-white border-2 border-slate-100 rounded-3xl focus:border-teal-500/50 outline-none transition-all shadow-sm text-lg font-bold appearance-none cursor-pointer"
                             value={formData.bloodType}
                             onChange={(e) => setFormData({ ...formData, bloodType: e.target.value })}
                         >
@@ -108,25 +112,28 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ onSignUp }) => {
 
                 <button
                     type="submit"
-                    className="w-full mt-4 py-4 bg-teal-600 text-white rounded-2xl font-bold shadow-lg shadow-teal-600/20 flex items-center justify-center gap-2 hover:bg-teal-700 transition-all active:scale-95"
+                    className="w-full py-6 bg-slate-900 text-white rounded-3xl font-black text-2xl shadow-2xl shadow-slate-900/20 flex items-center justify-center gap-3 hover:bg-black transition-all active:scale-[0.98] mt-4"
                 >
-                    Complete Registration <ChevronRight size={20} />
+                    Start Analysis <ChevronRight size={28} />
                 </button>
+
+                <div className="text-center">
+                    <p className="text-slate-500 text-lg font-medium">
+                        Already have access? <span className="text-teal-600 font-black cursor-pointer hover:underline underline-offset-4" onClick={() => navigate('/login')}>Sign In</span>
+                    </p>
+                </div>
             </form>
 
-            <div className="mt-8 text-center text-sm text-slate-500">
-                Already have an account?{' '}
-                <span
-                    className="text-teal-600 font-bold cursor-pointer hover:underline"
-                    onClick={() => navigate('/login')}
-                >
-                    Sign In
-                </span>
+            <div className="mt-auto pb-10 text-center space-y-4">
+                <div className="flex items-center justify-center gap-2 text-teal-600/40">
+                    <Heart size={16} fill="currentColor" />
+                    <Sparkles size={16} />
+                    <Heart size={16} fill="currentColor" />
+                </div>
+                <p className="text-xs text-slate-400 font-bold leading-relaxed uppercase tracking-widest px-4 opacity-60">
+                    Your health records are strictly confidential and analyzed using secure AI protocols.
+                </p>
             </div>
-
-            <p className="mt-auto pt-6 text-[10px] text-slate-400 text-center leading-relaxed">
-                By signing up, you agree to our Terms and recognize that MediAssest uses AI for information purposes only.
-            </p>
         </div>
     );
 };

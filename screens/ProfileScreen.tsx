@@ -1,6 +1,7 @@
 
 import React from 'react';
-import { User, Shield, Languages, LogOut, ChevronRight, HelpCircle, FileText } from 'lucide-react';
+import { User, Shield, Languages, LogOut, ChevronRight, HelpCircle, FileText, Camera, ArrowLeft, Heart, Sparkles } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { UserProfile, Language } from '../types';
 
 interface ProfileScreenProps {
@@ -13,6 +14,7 @@ interface ProfileScreenProps {
 export const ProfileScreen: React.FC<ProfileScreenProps> = ({ user, language, onLanguageChange, onUserUpdate }) => {
   const [isEditing, setIsEditing] = React.useState(false);
   const [editUser, setEditUser] = React.useState(user);
+  const navigate = useNavigate();
 
   const handleSave = () => {
     onUserUpdate(editUser);
@@ -20,123 +22,160 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ user, language, on
   };
 
   const sections = [
-    { title: 'Privacy & Security', icon: Shield, color: 'text-teal-600 bg-teal-50' },
-    { title: 'Help & Support', icon: HelpCircle, color: 'text-indigo-600 bg-indigo-50' },
+    { title: 'Privacy & Security', sub: 'Control your vault', icon: Shield, color: 'text-emerald-600 bg-emerald-50' },
+    { title: 'Help & Support', sub: 'Guides and FAQ', icon: HelpCircle, color: 'text-sky-600 bg-sky-50' },
   ];
 
   return (
-    <div className="p-6 pb-24 space-y-8">
-      <div className="flex flex-col items-center gap-4 text-center">
-        <div className="w-24 h-24 bg-teal-50 rounded-full border-4 border-white shadow-xl flex items-center justify-center relative overflow-hidden">
-          <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}`} alt="avatar" />
-          <div className="absolute bottom-0 right-0 p-1.5 bg-teal-600 text-white rounded-full border-2 border-white translate-x-1/4 translate-y-1/4">
-            <ChevronRight size={12} className="-rotate-90" />
+    <div className="p-6 pb-28 space-y-10 hero-gradient min-h-full">
+      <div className="flex items-center gap-4 pt-4">
+        <button onClick={() => navigate(-1)} className="w-10 h-10 bg-white rounded-xl shadow-sm text-slate-800 flex items-center justify-center border border-slate-100 active:scale-90 transition-transform">
+          <ArrowLeft size={20} />
+        </button>
+        <h1 className="text-3xl font-black text-slate-900 leading-tight">My Profile</h1>
+      </div>
+
+      <div className="flex flex-col items-center gap-6 text-center">
+        <div className="relative">
+          <div className="w-32 h-32 bg-white rounded-[3rem] border-4 border-white shadow-2xl flex items-center justify-center overflow-hidden medical-gradient p-1">
+            <div className="w-full h-full bg-white rounded-[2.8rem] overflow-hidden">
+              <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}`} alt="avatar" className="w-full h-full object-cover" />
+            </div>
           </div>
+          <button className="absolute bottom-0 right-0 w-10 h-10 bg-slate-900 text-white rounded-2xl border-4 border-white flex items-center justify-center shadow-lg active:scale-90 transition-transform">
+            <Camera size={18} />
+          </button>
         </div>
-        <div className="w-full">
+
+        <div className="w-full space-y-2">
           {isEditing ? (
             <input
               type="text"
-              className="text-2xl font-bold text-slate-800 text-center bg-slate-50 border-b-2 border-teal-500 outline-none w-full"
+              className="text-3xl font-black text-slate-900 text-center bg-white border-b-4 border-teal-500 outline-none w-full px-4 py-2 rounded-2xl shadow-inner italic"
               value={editUser.name}
               onChange={(e) => setEditUser({ ...editUser, name: e.target.value })}
             />
           ) : (
-            <h1 className="text-2xl font-bold text-slate-800">{user.name}</h1>
+            <h2 className="text-3xl font-black text-slate-900 italic tracking-tight">{user.name}</h2>
           )}
-          <p className="text-slate-400 text-sm">Member since Oct 2024</p>
+          <div className="flex items-center justify-center gap-2">
+            <span className="w-2 h-2 bg-emerald-500 rounded-full"></span>
+            <p className="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">Verified Shield Member</p>
+          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="bg-white p-4 rounded-3xl border border-slate-100 text-center shadow-sm">
-          <p className="text-xs text-slate-400 font-bold uppercase mb-1">Blood Type</p>
+      <div className="grid grid-cols-2 gap-6">
+        <div className="bg-white p-6 rounded-[2.5rem] border-2 border-slate-50 text-center shadow-xl shadow-slate-900/5 group hover:border-rose-100 transition-all">
+          <div className="bg-rose-50 w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+            <Heart size={24} className="text-rose-500" fill="currentColor" />
+          </div>
+          <p className="text-xs text-slate-400 font-black uppercase tracking-widest mb-1">Blood</p>
           {isEditing ? (
             <input
               type="text"
-              className="text-xl font-bold text-red-500 text-center bg-slate-50 w-full outline-none"
+              className="text-2xl font-black text-rose-600 text-center bg-rose-50 rounded-xl w-full outline-none p-1"
               value={editUser.bloodType}
               onChange={(e) => setEditUser({ ...editUser, bloodType: e.target.value })}
             />
           ) : (
-            <p className="text-xl font-bold text-red-500">{user.bloodType}</p>
+            <p className="text-2xl font-black text-rose-600 italic">{user.bloodType}</p>
           )}
         </div>
-        <div className="bg-white p-4 rounded-3xl border border-slate-100 text-center shadow-sm">
-          <p className="text-xs text-slate-400 font-bold uppercase mb-1">Age</p>
+        <div className="bg-white p-6 rounded-[2.5rem] border-2 border-slate-50 text-center shadow-xl shadow-slate-900/5 group hover:border-sky-100 transition-all">
+          <div className="bg-sky-50 w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+            <User size={24} className="text-sky-500" />
+          </div>
+          <p className="text-xs text-slate-400 font-black uppercase tracking-widest mb-1">Age</p>
           {isEditing ? (
             <input
               type="number"
-              className="text-xl font-bold text-slate-800 text-center bg-slate-50 w-full outline-none"
+              className="text-2xl font-black text-slate-900 text-center bg-sky-50 rounded-xl w-full outline-none p-1"
               value={editUser.age}
               onChange={(e) => setEditUser({ ...editUser, age: parseInt(e.target.value) || 0 })}
             />
           ) : (
-            <p className="text-xl font-bold text-slate-800">{user.age} yrs</p>
+            <p className="text-2xl font-black text-slate-800 italic">{user.age} <span className="text-sm font-medium not-italic opacity-50">yrs</span></p>
           )}
         </div>
       </div>
 
-      <section className="space-y-3">
+      <section className="space-y-4">
         <button
           onClick={() => isEditing ? handleSave() : setIsEditing(true)}
-          className="w-full bg-teal-600 text-white p-4 rounded-3xl flex items-center justify-center gap-2 font-bold hover:bg-teal-700 transition-all active:scale-[0.98]"
+          className={`w-full p-6 rounded-[2rem] flex items-center justify-center gap-3 font-black text-xl transition-all active:scale-[0.98] shadow-2xl ${isEditing
+              ? 'bg-emerald-600 text-white shadow-emerald-600/30'
+              : 'bg-slate-900 text-white shadow-slate-900/30'
+            }`}
         >
-          {isEditing ? 'Save Changes' : 'Edit Profile'}
+          {isEditing ? <CheckCircle size={24} /> : <Sparkles size={24} />}
+          {isEditing ? 'Save Profile' : 'Edit My Profile'}
         </button>
 
-        {sections.map(section => (
-          <button
-            key={section.title}
-            className="w-full bg-white p-4 rounded-3xl border border-slate-100 flex items-center gap-4 hover:border-teal-100 transition-all active:scale-[0.98]"
-          >
-            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${section.color}`}>
-              <section.icon size={24} />
+        <div className="space-y-4 pt-4">
+          {sections.map(section => (
+            <button
+              key={section.title}
+              className="w-full bg-white p-6 rounded-[2.5rem] border-2 border-slate-50 flex items-center gap-5 hover:border-teal-100 transition-all active:scale-[0.98] shadow-sm hover:shadow-xl"
+            >
+              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${section.color} border border-white`}>
+                <section.icon size={28} />
+              </div>
+              <div className="flex-1 text-left">
+                <p className="font-black text-xl text-slate-800 leading-tight">{section.title}</p>
+                <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">{section.sub}</p>
+              </div>
+              <ChevronRight size={24} className="text-slate-300" />
+            </button>
+          ))}
+
+          <div className="w-full bg-white p-6 rounded-[2.5rem] border-2 border-slate-50 flex items-center gap-5 shadow-sm">
+            <div className="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center shrink-0 border border-white">
+              <Languages size={28} />
             </div>
-            <span className="flex-1 text-left font-bold text-slate-700">{section.title}</span>
-            <ChevronRight size={18} className="text-slate-300" />
-          </button>
-        ))}
-
-        <div className="w-full bg-white p-4 rounded-3xl border border-slate-100 flex items-center gap-4">
-          <div className="w-12 h-12 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center shrink-0">
-            <Languages size={24} />
+            <div className="flex-1 text-left">
+              <p className="font-black text-xl text-slate-800 leading-tight">Language</p>
+              <p className="text-sm font-bold text-slate-400 capitalize">Currently: {language}</p>
+            </div>
+            <select
+              className="bg-slate-50 border-2 border-slate-100 text-lg font-black text-slate-700 rounded-2xl px-4 py-2 outline-none focus:border-teal-500 appearance-none cursor-pointer"
+              value={language}
+              onChange={(e) => onLanguageChange(e.target.value as Language)}
+            >
+              <option value="en">English</option>
+              <option value="es">Español</option>
+              <option value="fr">Français</option>
+              <option value="hi">हिन्दी</option>
+            </select>
           </div>
-          <div className="flex-1 text-left">
-            <p className="font-bold text-slate-700">Language</p>
-            <p className="text-xs text-slate-400">Current: {language.toUpperCase()}</p>
-          </div>
-          <select
-            className="bg-slate-50 border-none text-sm font-bold text-slate-600 rounded-lg p-2 outline-none"
-            value={language}
-            onChange={(e) => onLanguageChange(e.target.value as Language)}
-          >
-            <option value="en">English</option>
-            <option value="es">Español</option>
-            <option value="fr">Français</option>
-            <option value="hi">हिन्दी</option>
-          </select>
         </div>
       </section>
 
-      <section className="pt-4 space-y-4">
-        <div className="bg-slate-50 p-6 rounded-3xl border border-slate-200">
-          <div className="flex items-center gap-2 mb-3 text-slate-400">
-            <FileText size={16} />
-            <h4 className="text-xs font-bold uppercase tracking-widest">Medical Disclaimer</h4>
+      <section className="pt-6 space-y-6">
+        <div className="bg-slate-900 p-8 rounded-[3rem] shadow-2xl relative overflow-hidden">
+          <div className="flex items-center gap-3 mb-4 text-teal-400 relative z-10">
+            <FileText size={24} />
+            <h4 className="text-sm font-black uppercase tracking-[0.2em] italic">Full Disclaimer</h4>
           </div>
-          <p className="text-[10px] text-slate-400 leading-relaxed text-justify italic">
-            MediAssest is an AI-powered informative platform. It is not intended to replace medical advice from a qualified healthcare provider. Do not disregard professional medical advice or delay seeking it because of something you have read here. In case of emergency, call 911 immediately.
+          <p className="text-xs text-slate-400 leading-relaxed font-medium relative z-10">
+            MediAssest uses clinical-grade AI for educational purposes. It does not replace professional medical diagnosis. Always consult with a doctor before making medical decisions. In case of a medical emergency, please contact your local emergency services immediately.
           </p>
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl translate-x-1/2 -translate-y-1/2"></div>
         </div>
 
-        <button className="w-full flex items-center justify-center gap-2 py-4 text-red-500 font-bold rounded-2xl border-2 border-red-50 border-dashed hover:bg-red-50 transition-colors">
-          <LogOut size={20} />
-          Sign Out
+        <button className="w-full h-16 flex items-center justify-center gap-3 text-rose-500 font-black text-xl rounded-[2rem] border-4 border-rose-50 border-dashed hover:bg-rose-50/50 transition-all active:scale-95">
+          <LogOut size={24} />
+          Sign Out of Vault
         </button>
       </section>
 
-      <p className="text-center text-slate-300 text-[10px] font-medium">MediAssest v1.0.24 • Built with ❤️ for Wellness</p>
+      <div className="flex flex-col items-center gap-2 py-4">
+        <div className="flex items-center gap-2">
+          <Sparkles size={16} className="text-teal-500" />
+          <p className="text-xs font-black text-slate-400 uppercase tracking-widest">MediAssest v2.0.1 Premium</p>
+        </div>
+        <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.3em]">Encrypted healthcare companion</p>
+      </div>
     </div>
   );
 };
