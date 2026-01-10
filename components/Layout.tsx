@@ -1,14 +1,12 @@
 
 import React from 'react';
-import { Home, ClipboardList, MessageSquare, Bell, User, PlusCircle } from 'lucide-react';
+import { Home, ClipboardList, MessageSquare, PlusCircle } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const navItems = [
   { path: '/home', icon: Home, label: 'Home' },
   { path: '/library', icon: ClipboardList, label: 'Records' },
   { path: '/chat', icon: MessageSquare, label: 'Chat' },
-  { path: '/reminders', icon: Bell, label: 'Reminders' },
-  { path: '/profile', icon: User, label: 'Profile' },
 ];
 
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {

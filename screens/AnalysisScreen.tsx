@@ -28,20 +28,20 @@ export const AnalysisScreen: React.FC<AnalysisScreenProps> = ({ analysis, loadin
   }
 
   if (!analysis) {
-     return (
-        <div className="h-full flex flex-col items-center justify-center p-8 text-center bg-white">
-            <RefreshCcw size={48} className="text-slate-200 mb-4" />
-            <h2 className="text-xl font-bold text-slate-800">No Analysis Available</h2>
-            <p className="text-slate-500 mt-2 mb-6">Please upload a report to see insights here.</p>
-            <button onClick={() => navigate('/upload')} className="bg-teal-600 text-white px-8 py-3 rounded-2xl font-bold">Go to Upload</button>
-        </div>
-     );
+    return (
+      <div className="h-full flex flex-col items-center justify-center p-8 text-center bg-white">
+        <RefreshCcw size={48} className="text-slate-200 mb-4" />
+        <h2 className="text-xl font-bold text-slate-800">No Analysis Available</h2>
+        <p className="text-slate-500 mt-2 mb-6">Please upload a report to see insights here.</p>
+        <button onClick={() => navigate('/upload')} className="bg-teal-600 text-white px-8 py-3 rounded-2xl font-bold">Go to Upload</button>
+      </div>
+    );
   }
 
-  const riskColor = 
+  const riskColor =
     analysis.riskPrediction.level === RiskLevel.LOW ? 'text-green-600 bg-green-50' :
-    analysis.riskPrediction.level === RiskLevel.MEDIUM ? 'text-orange-600 bg-orange-50' : 
-    'text-red-600 bg-red-50';
+      analysis.riskPrediction.level === RiskLevel.MEDIUM ? 'text-orange-600 bg-orange-50' :
+        'text-red-600 bg-red-50';
 
   return (
     <div className="p-6 pb-24 space-y-8 bg-slate-50">
@@ -93,7 +93,7 @@ export const AnalysisScreen: React.FC<AnalysisScreenProps> = ({ analysis, loadin
           <Info className="text-sky-600" size={20} />
           <h3 className="font-bold text-lg text-slate-800">Health Risk Level</h3>
         </div>
-        
+
         <div className={`p-6 rounded-2xl text-center flex flex-col items-center ${riskColor}`}>
           <span className="text-xs font-bold uppercase tracking-widest opacity-70 mb-1">Estimated Risk</span>
           <span className="text-3xl font-black">{analysis.riskPrediction.level}</span>

@@ -62,7 +62,7 @@ export const LoginScreen = () => {
           <span className="text-sm font-medium">Use Biometric Login</span>
         </button>
         <p className="text-slate-500 text-sm">
-          Don't have an account? <span className="text-teal-600 font-bold cursor-pointer">Sign up</span>
+          Don't have an account? <span className="text-teal-600 font-bold cursor-pointer" onClick={() => navigate('/signup')}>Sign up</span>
         </p>
       </div>
 

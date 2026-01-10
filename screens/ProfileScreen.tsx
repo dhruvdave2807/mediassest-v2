@@ -1,19 +1,26 @@
 
 import React from 'react';
-import { User, Shield, Bell, Languages, LogOut, ChevronRight, HelpCircle, FileText } from 'lucide-react';
+import { User, Shield, Languages, LogOut, ChevronRight, HelpCircle, FileText } from 'lucide-react';
 import { UserProfile, Language } from '../types';
 
 interface ProfileScreenProps {
   user: UserProfile;
   language: Language;
   onLanguageChange: (lang: Language) => void;
+  onUserUpdate: (user: UserProfile) => void;
 }
 
-export const ProfileScreen: React.FC<ProfileScreenProps> = ({ user, language, onLanguageChange }) => {
+export const ProfileScreen: React.FC<ProfileScreenProps> = ({ user, language, onLanguageChange, onUserUpdate }) => {
+  const [isEditing, setIsEditing] = React.useState(false);
+  const [editUser, setEditUser] = React.useState(user);
+
+  const handleSave = () => {
+    onUserUpdate(editUser);
+    setIsEditing(false);
+  };
+
   const sections = [
-    { title: 'Personal Info', icon: User, color: 'text-sky-600 bg-sky-50' },
     { title: 'Privacy & Security', icon: Shield, color: 'text-teal-600 bg-teal-50' },
-    { title: 'Notifications', icon: Bell, color: 'text-orange-600 bg-orange-50' },
     { title: 'Help & Support', icon: HelpCircle, color: 'text-indigo-600 bg-indigo-50' },
   ];
 
@@ -23,29 +30,63 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ user, language, on
         <div className="w-24 h-24 bg-teal-50 rounded-full border-4 border-white shadow-xl flex items-center justify-center relative overflow-hidden">
           <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}`} alt="avatar" />
           <div className="absolute bottom-0 right-0 p-1.5 bg-teal-600 text-white rounded-full border-2 border-white translate-x-1/4 translate-y-1/4">
-             <ChevronRight size={12} className="-rotate-90" />
+            <ChevronRight size={12} className="-rotate-90" />
           </div>
         </div>
-        <div>
-          <h1 className="text-2xl font-bold text-slate-800">{user.name}</h1>
+        <div className="w-full">
+          {isEditing ? (
+            <input
+              type="text"
+              className="text-2xl font-bold text-slate-800 text-center bg-slate-50 border-b-2 border-teal-500 outline-none w-full"
+              value={editUser.name}
+              onChange={(e) => setEditUser({ ...editUser, name: e.target.value })}
+            />
+          ) : (
+            <h1 className="text-2xl font-bold text-slate-800">{user.name}</h1>
+          )}
           <p className="text-slate-400 text-sm">Member since Oct 2024</p>
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div className="bg-white p-4 rounded-3xl border border-slate-100 text-center shadow-sm">
-           <p className="text-xs text-slate-400 font-bold uppercase mb-1">Blood Type</p>
-           <p className="text-xl font-bold text-red-500">{user.bloodType}</p>
+          <p className="text-xs text-slate-400 font-bold uppercase mb-1">Blood Type</p>
+          {isEditing ? (
+            <input
+              type="text"
+              className="text-xl font-bold text-red-500 text-center bg-slate-50 w-full outline-none"
+              value={editUser.bloodType}
+              onChange={(e) => setEditUser({ ...editUser, bloodType: e.target.value })}
+            />
+          ) : (
+            <p className="text-xl font-bold text-red-500">{user.bloodType}</p>
+          )}
         </div>
         <div className="bg-white p-4 rounded-3xl border border-slate-100 text-center shadow-sm">
-           <p className="text-xs text-slate-400 font-bold uppercase mb-1">Age</p>
-           <p className="text-xl font-bold text-slate-800">{user.age} yrs</p>
+          <p className="text-xs text-slate-400 font-bold uppercase mb-1">Age</p>
+          {isEditing ? (
+            <input
+              type="number"
+              className="text-xl font-bold text-slate-800 text-center bg-slate-50 w-full outline-none"
+              value={editUser.age}
+              onChange={(e) => setEditUser({ ...editUser, age: parseInt(e.target.value) || 0 })}
+            />
+          ) : (
+            <p className="text-xl font-bold text-slate-800">{user.age} yrs</p>
+          )}
         </div>
       </div>
 
       <section className="space-y-3">
+        <button
+          onClick={() => isEditing ? handleSave() : setIsEditing(true)}
+          className="w-full bg-teal-600 text-white p-4 rounded-3xl flex items-center justify-center gap-2 font-bold hover:bg-teal-700 transition-all active:scale-[0.98]"
+        >
+          {isEditing ? 'Save Changes' : 'Edit Profile'}
+        </button>
+
         {sections.map(section => (
-          <button 
+          <button
             key={section.title}
             className="w-full bg-white p-4 rounded-3xl border border-slate-100 flex items-center gap-4 hover:border-teal-100 transition-all active:scale-[0.98]"
           >
@@ -65,7 +106,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ user, language, on
             <p className="font-bold text-slate-700">Language</p>
             <p className="text-xs text-slate-400">Current: {language.toUpperCase()}</p>
           </div>
-          <select 
+          <select
             className="bg-slate-50 border-none text-sm font-bold text-slate-600 rounded-lg p-2 outline-none"
             value={language}
             onChange={(e) => onLanguageChange(e.target.value as Language)}
@@ -80,13 +121,13 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ user, language, on
 
       <section className="pt-4 space-y-4">
         <div className="bg-slate-50 p-6 rounded-3xl border border-slate-200">
-           <div className="flex items-center gap-2 mb-3 text-slate-400">
-              <FileText size={16} />
-              <h4 className="text-xs font-bold uppercase tracking-widest">Medical Disclaimer</h4>
-           </div>
-           <p className="text-[10px] text-slate-400 leading-relaxed text-justify italic">
-             MediAssest is an AI-powered informative platform. It is not intended to replace medical advice from a qualified healthcare provider. Do not disregard professional medical advice or delay seeking it because of something you have read here. In case of emergency, call 911 immediately.
-           </p>
+          <div className="flex items-center gap-2 mb-3 text-slate-400">
+            <FileText size={16} />
+            <h4 className="text-xs font-bold uppercase tracking-widest">Medical Disclaimer</h4>
+          </div>
+          <p className="text-[10px] text-slate-400 leading-relaxed text-justify italic">
+            MediAssest is an AI-powered informative platform. It is not intended to replace medical advice from a qualified healthcare provider. Do not disregard professional medical advice or delay seeking it because of something you have read here. In case of emergency, call 911 immediately.
+          </p>
         </div>
 
         <button className="w-full flex items-center justify-center gap-2 py-4 text-red-500 font-bold rounded-2xl border-2 border-red-50 border-dashed hover:bg-red-50 transition-colors">
@@ -94,7 +135,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ user, language, on
           Sign Out
         </button>
       </section>
-      
+
       <p className="text-center text-slate-300 text-[10px] font-medium">MediAssest v1.0.24 • Built with ❤️ for Wellness</p>
     </div>
   );
