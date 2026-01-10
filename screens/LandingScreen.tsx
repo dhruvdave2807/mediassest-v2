@@ -2,27 +2,28 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
-import { 
-  Activity, 
-  Apple, 
-  PlayCircle, 
-  Sparkles, 
-  CheckCircle2, 
-  Heart, 
-  ScanLine, 
-  BrainCircuit, 
-  Lock, 
-  BarChart, 
-  Users, 
-  Clock, 
-  ChevronRight, 
-  Shield, 
-  Zap, 
-  Twitter, 
-  Linkedin, 
-  Instagram 
+import {
+  Activity,
+  Apple,
+  PlayCircle,
+  Sparkles,
+  CheckCircle2,
+  Heart,
+  ScanLine,
+  BrainCircuit,
+  Lock,
+  BarChart,
+  Users,
+  Clock,
+  ChevronRight,
+  Shield,
+  Zap,
+  Twitter,
+  Linkedin,
+  Instagram,
+  ArrowRight
 } from 'lucide-react';
-import './LandingScreen.css';
+
 
 export const LandingScreen: React.FC = () => {
   const navigate = useNavigate();
@@ -55,7 +56,7 @@ export const LandingScreen: React.FC = () => {
               <a href="#features" className="hover:text-sky-500 transition-colors">Features</a>
               <a href="#analytics" className="hover:text-sky-500 transition-colors">Analytics</a>
               <a href="#security" className="hover:text-sky-500 transition-colors">Security</a>
-              <button 
+              <button
                 onClick={handleGetStarted}
                 className="bg-sky-500 text-white px-7 py-3 rounded-xl hover:bg-sky-600 transition shadow-lg shadow-sky-200 active:scale-95"
               >
@@ -83,22 +84,22 @@ export const LandingScreen: React.FC = () => {
                 AI Health Revolution
               </div>
               <h1 className="text-5xl lg:text-7xl font-extrabold text-slate-900 leading-[1.05] mb-8">
-                Your Health Data, <br/>
+                Your Health Data, <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-500 to-blue-600">Finally Clear.</span>
               </h1>
               <p className="text-xl text-slate-600 leading-relaxed max-w-xl mb-10">
                 The smart medical companion that turns complex lab reports into plain English and identifies early health risks using advanced clinical AI.
               </p>
               <div className="flex flex-col sm:flex-row gap-5">
-                <button className="flex items-center justify-center gap-3 bg-slate-900 text-white px-10 py-5 rounded-2xl hover:bg-slate-800 transition-all transform hover:-translate-y-1 shadow-xl">
-                  <Apple className="w-6 h-6" />
-                  <div className="text-left">
-                    <p className="text-[10px] uppercase font-bold opacity-70 leading-none">Download on the</p>
-                    <p className="text-lg font-semibold leading-none">App Store</p>
-                  </div>
-                </button>
-                <button className="flex items-center justify-center gap-3 bg-white border border-slate-200 text-slate-700 px-10 py-5 rounded-2xl hover:border-sky-300 hover:bg-sky-50 transition-all transform hover:-translate-y-1 shadow-md">
-                  <PlayCircle className="w-6 h-6 text-sky-500" />
+                <a href="#get-started"
+                  className="flex items-center justify-center gap-3 bg-sky-500 text-white px-10 py-5 rounded-2xl hover:bg-sky-600 transition-all transform hover:-translate-y-1 hover:scale-105 active:scale-95 shadow-xl font-black animate-button-pulse">
+                  <span className="text-lg">Get Started Now</span>
+                  <ArrowRight className="w-5 h-5 animate-arrow-slide" />
+                </a>
+                <button
+                  onClick={() => { alert('Demo video will open here.'); }}
+                  className="flex items-center justify-center gap-3 bg-white border border-slate-200 text-slate-700 px-10 py-5 rounded-2xl hover:border-sky-300 hover:bg-sky-50 transition-all transform hover:-translate-y-1 hover:scale-105 active:scale-95 shadow-md group">
+                  <PlayCircle className="w-6 h-6 text-sky-500 group-hover:scale-110 transition-transform" />
                   <span className="text-lg font-semibold">Watch Demo</span>
                 </button>
               </div>
@@ -125,7 +126,7 @@ export const LandingScreen: React.FC = () => {
                     <div className="w-2 h-2 rounded-full bg-slate-200"></div>
                   </div>
                 </div>
-                
+
                 <div className="space-y-6">
                   <div className="bg-slate-100/50 p-4 rounded-2xl rounded-tl-none text-sm text-slate-700 max-w-[85%] border border-slate-100">
                     "I see your Vitamin D is at 18 ng/mL. This is clinically low (Deficient)."
@@ -142,7 +143,7 @@ export const LandingScreen: React.FC = () => {
                   </div>
                 </div>
               </div>
-              
+
               {/* Floating Data Cards */}
               <div className="absolute -top-10 -right-10 bg-white p-5 rounded-2xl shadow-xl border border-sky-50 z-20 animate-float" style={{ animationDelay: '-2s' }}>
                 <div className="flex items-center gap-4">
@@ -158,10 +159,10 @@ export const LandingScreen: React.FC = () => {
             </div>
           </div>
         </div>
-      </section>
+      </section >
 
       {/* Features Section */}
-      <section id="features" className="py-32 bg-white relative">
+      < section id="features" className="py-32 bg-white relative" >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-20" data-aos="fade-up">
             <h2 className="text-sky-500 font-black tracking-widest uppercase text-xs mb-4">Features</h2>
@@ -196,10 +197,10 @@ export const LandingScreen: React.FC = () => {
             </div>
           </div>
         </div>
-      </section>
+      </section >
 
       {/* Analytics Showcase */}
-      <section id="analytics" className="py-24 bg-slate-900 overflow-hidden relative">
+      < section id="analytics" className="py-24 bg-slate-900 overflow-hidden relative" >
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-0 left-0 w-full h-full" style={{ backgroundImage: 'radial-gradient(#38bdf8 1px, transparent 1px)', backgroundSize: '30px 30px' }}></div>
         </div>
@@ -208,7 +209,7 @@ export const LandingScreen: React.FC = () => {
           <div className="grid lg:grid-cols-2 gap-20 items-center">
             <div data-aos="fade-right">
               <h3 className="text-sky-400 font-bold mb-4">DASHBOARD PREVIEW</h3>
-              <h4 className="text-4xl font-extrabold text-white mb-8 leading-tight">Monitor Your Vital Assets <br/> In Real-Time.</h4>
+              <h4 className="text-4xl font-extrabold text-white mb-8 leading-tight">Monitor Your Vital Assets <br /> In Real-Time.</h4>
               <div className="space-y-8">
                 <div className="flex items-start gap-5">
                   <div className="bg-sky-500/20 p-3 rounded-xl border border-sky-500/30">
@@ -260,21 +261,21 @@ export const LandingScreen: React.FC = () => {
             </div>
           </div>
         </div>
-      </section>
+      </section >
 
       {/* Final CTA */}
-      <section className="py-32 relative overflow-hidden">
+      < section className="py-32 relative overflow-hidden" >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="zoom-in">
           <div className="bg-gradient-to-br from-sky-600 to-blue-700 p-16 rounded-[3rem] shadow-2xl relative overflow-hidden group">
             {/* Sparkle background effects */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:scale-150 transition-transform duration-1000"></div>
-            
-            <h2 className="text-4xl lg:text-6xl font-black text-white mb-8 relative z-10 italic">Your New Medical <br/> Life Awaits.</h2>
+
+            <h2 className="text-4xl lg:text-6xl font-black text-white mb-8 relative z-10 italic">Your New Medical <br /> Life Awaits.</h2>
             <p className="text-sky-100 text-xl mb-12 max-w-2xl mx-auto relative z-10 leading-relaxed opacity-90">
               Stop fearing your medical records. Start using them to live longer, better, and smarter.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-6 relative z-10">
-              <button 
+              <button
                 onClick={handleGetStarted}
                 className="bg-white text-sky-600 px-12 py-5 rounded-[1.5rem] font-black text-lg hover:bg-sky-50 transition shadow-xl transform hover:scale-105 active:scale-95"
               >
@@ -294,10 +295,10 @@ export const LandingScreen: React.FC = () => {
             </div>
           </div>
         </div>
-      </section>
+      </section >
 
       {/* Footer */}
-      <footer className="bg-white py-20 border-t border-slate-100">
+      < footer className="bg-white py-20 border-t border-slate-100" >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-12 mb-16">
             <div className="col-span-2">
@@ -336,7 +337,7 @@ export const LandingScreen: React.FC = () => {
             <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">Built with Heart & AI</p>
           </div>
         </div>
-      </footer>
-    </div>
+      </footer >
+    </div >
   );
 };

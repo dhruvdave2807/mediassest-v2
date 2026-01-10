@@ -52,9 +52,12 @@
 
         /* Subtle Pulse for AI elements */
         @keyframes subtle-pulse {
-            0%, 100% {
+
+            0%,
+            100% {
                 opacity: 1;
             }
+
             50% {
                 opacity: 0.7;
             }
@@ -66,9 +69,12 @@
 
         /* Button Animations */
         @keyframes button-pulse {
-            0%, 100% {
+
+            0%,
+            100% {
                 box-shadow: 0 10px 25px -5px rgba(14, 165, 233, 0.3);
             }
+
             50% {
                 box-shadow: 0 10px 35px -5px rgba(14, 165, 233, 0.5);
             }
@@ -79,9 +85,12 @@
         }
 
         @keyframes button-glow {
-            0%, 100% {
+
+            0%,
+            100% {
                 box-shadow: 0 10px 25px -5px rgba(255, 255, 255, 0.3);
             }
+
             50% {
                 box-shadow: 0 10px 35px -5px rgba(255, 255, 255, 0.5);
             }
@@ -95,9 +104,11 @@
             0% {
                 transform: translateX(0);
             }
+
             50% {
                 transform: translateX(5px);
             }
+
             100% {
                 transform: translateX(0);
             }
@@ -108,15 +119,18 @@
         }
 
         /* Enhanced button hover effects */
-        button, a[href^="#"] {
+        button,
+        a[href^="#"] {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        button:hover, a[href^="#"]:hover {
+        button:hover,
+        a[href^="#"]:hover {
             transform: translateY(-2px);
         }
 
-        button:active, a[href^="#"]:active {
+        button:active,
+        a[href^="#"]:active {
             transform: translateY(0) scale(0.98);
         }
 
@@ -204,13 +218,15 @@
                         early health risks using advanced clinical AI.
                     </p>
                     <div class="flex flex-col sm:flex-row gap-5">
-                        <a href="#get-started" class="flex items-center justify-center gap-3 bg-sky-500 text-white px-10 py-5 rounded-2xl hover:bg-sky-600 transition-all transform hover:-translate-y-1 hover:scale-105 active:scale-95 shadow-xl font-black animate-button-pulse">
+                        <a href="#get-started"
+                            class="flex items-center justify-center gap-3 bg-sky-500 text-white px-10 py-5 rounded-2xl hover:bg-sky-600 transition-all transform hover:-translate-y-1 hover:scale-105 active:scale-95 shadow-xl font-black animate-button-pulse">
                             <span class="text-lg">Get Started Now</span>
                             <i data-lucide="arrow-right" class="w-5 h-5 animate-arrow-slide"></i>
                         </a>
                         <button onclick="handleWatchDemo()"
                             class="flex items-center justify-center gap-3 bg-white border border-slate-200 text-slate-700 px-10 py-5 rounded-2xl hover:border-sky-300 hover:bg-sky-50 transition-all transform hover:-translate-y-1 hover:scale-105 active:scale-95 shadow-md group">
-                            <i data-lucide="play-circle" class="w-6 h-6 text-sky-500 group-hover:scale-110 transition-transform"></i>
+                            <i data-lucide="play-circle"
+                                class="w-6 h-6 text-sky-500 group-hover:scale-110 transition-transform"></i>
                             <span class="text-lg font-semibold">Watch Demo</span>
                         </button>
                     </div>
@@ -572,4 +588,5 @@
         };
     </script>
 </body>
+
 </html>
