@@ -140,21 +140,6 @@ export const AnalysisScreen: React.FC<AnalysisScreenProps> = ({ analysis, loadin
         </div>
       </section>
 
-      {/* Consult Doctor Banner */}
-      <section className="bg-teal-600 p-6 rounded-3xl text-white shadow-lg shadow-teal-600/20">
-        <div className="flex items-center gap-4 mb-3">
-          <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-md">
-            <Stethoscope size={28} />
-          </div>
-          <div>
-            <h4 className="font-bold text-lg">Consult a Professional</h4>
-            <p className="text-xs text-teal-50/80">Schedule a review with your doctor.</p>
-          </div>
-        </div>
-        <button className="w-full py-3 bg-white text-teal-600 rounded-2xl font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform shadow-md">
-          Find Specialist <ChevronRight size={18} />
-        </button>
-      </section>
 
       {/* Chat with Report */}
       <section className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex flex-col h-[500px]">
@@ -175,8 +160,8 @@ export const AnalysisScreen: React.FC<AnalysisScreenProps> = ({ analysis, loadin
           {chatHistory.map((chat, idx) => (
             <div key={idx} className={`flex ${chat.role === 'user' ? 'justify-end' : 'justify-start'}`}>
               <div className={`max-w-[85%] p-4 rounded-2xl text-sm ${chat.role === 'user'
-                  ? 'bg-teal-600 text-white rounded-tr-none'
-                  : 'bg-slate-100 text-slate-700 rounded-tl-none border border-slate-200'
+                ? 'bg-teal-600 text-white rounded-tr-none'
+                : 'bg-slate-100 text-slate-700 rounded-tl-none border border-slate-200'
                 }`}>
                 {chat.content}
               </div>
