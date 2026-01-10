@@ -1,16 +1,40 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AlertTriangle, CheckCircle, Info, ChevronRight, Stethoscope, ArrowLeft, RefreshCcw } from 'lucide-react';
-import { AIAnalysis, RiskLevel } from '../types';
+import { AlertTriangle, CheckCircle, Info, ChevronRight, Stethoscope, ArrowLeft, RefreshCcw, Sparkles } from 'lucide-react';
+import { UserProfile, AIAnalysis, RiskLevel } from '../types';
+import { chatWithReport } from '../geminiService';
 
 interface AnalysisScreenProps {
   analysis: AIAnalysis | null;
   loading: boolean;
+  userProfile: UserProfile;
 }
 
-export const AnalysisScreen: React.FC<AnalysisScreenProps> = ({ analysis, loading }) => {
+export const AnalysisScreen: React.FC<AnalysisScreenProps> = ({ analysis, loading, userProfile }) => {
   const navigate = useNavigate();
+  const [chatMessage, setChatMessage] = React.useState('');
+  const [chatHistory, setChatHistory] = React.useState<{ role: 'user' | 'ai'; content: string }[]>([]);
+  const [isSending, setIsSending] = React.useState(false);
+
+  const handleSendMessage = async () => {
+    if (!chatMessage.trim() || !analysis) return;
+
+    const userMsg = chatMessage;
+    setChatMessage('');
+    setChatHistory(prev => [...prev, { role: 'user', content: userMsg }]);
+    setIsSending(true);
+
+    try {
+      const response = await chatWithReport(userMsg, analysis, userProfile);
+      setChatHistory(prev => [...prev, { role: 'ai', content: response }]);
+    } catch (error) {
+      console.error("Chat error:", error);
+      setChatHistory(prev => [...prev, { role: 'ai', content: "Sorry, I'm having trouble connecting to my medical brain right now." }]);
+    } finally {
+      setIsSending(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -130,6 +154,62 @@ export const AnalysisScreen: React.FC<AnalysisScreenProps> = ({ analysis, loadin
         <button className="w-full py-3 bg-white text-teal-600 rounded-2xl font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform shadow-md">
           Find Specialist <ChevronRight size={18} />
         </button>
+      </section>
+
+      {/* Chat with Report */}
+      <section className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex flex-col h-[500px]">
+        <div className="flex items-center gap-2 mb-4">
+          <Sparkles className="text-teal-500" size={20} />
+          <h3 className="font-bold text-lg text-slate-800">Ask your Report AI</h3>
+        </div>
+
+        <div className="flex-1 overflow-y-auto space-y-4 mb-4 custom-scrollbar p-2">
+          {chatHistory.length === 0 && (
+            <div className="text-center py-10">
+              <div className="bg-teal-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Info size={32} className="text-teal-600" />
+              </div>
+              <p className="text-slate-500 text-sm">Ask me anything about these results.<br />I'll explain them simply for you.</p>
+            </div>
+          )}
+          {chatHistory.map((chat, idx) => (
+            <div key={idx} className={`flex ${chat.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+              <div className={`max-w-[85%] p-4 rounded-2xl text-sm ${chat.role === 'user'
+                  ? 'bg-teal-600 text-white rounded-tr-none'
+                  : 'bg-slate-100 text-slate-700 rounded-tl-none border border-slate-200'
+                }`}>
+                {chat.content}
+              </div>
+            </div>
+          ))}
+          {isSending && (
+            <div className="flex justify-start">
+              <div className="bg-slate-100 p-4 rounded-2xl rounded-tl-none border border-slate-200 flex gap-2">
+                <div className="w-2 h-2 bg-slate-300 rounded-full animate-bounce"></div>
+                <div className="w-2 h-2 bg-slate-300 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                <div className="w-2 h-2 bg-slate-300 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={chatMessage}
+            onChange={(e) => setChatMessage(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+            placeholder="Ask a follow-up question..."
+            className="flex-1 bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+          />
+          <button
+            disabled={isSending}
+            onClick={handleSendMessage}
+            className="bg-teal-600 text-white p-3 rounded-2xl hover:bg-teal-700 active:scale-95 transition-all shadow-md shadow-teal-200 disabled:opacity-50"
+          >
+            <ChevronRight size={24} />
+          </button>
+        </div>
       </section>
     </div>
   );

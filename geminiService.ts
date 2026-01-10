@@ -67,6 +67,46 @@ export const analyzeMedicalReport = async (
   return JSON.parse(response.text || '{}') as AIAnalysis;
 };
 
+export const chatWithReport = async (
+  message: string,
+  analysis: AIAnalysis,
+  userProfile: UserProfile
+) => {
+  const model = ai.models.generateContent({
+    model: 'gemini-3-flash-preview',
+    contents: [
+      {
+        parts: [
+          {
+            text: `
+              You are MediAssest AI, a medical assistant. You are helping ${userProfile.name} understand their medical report.
+              
+              REPORT DATA:
+              Summary: ${analysis.summary}
+              Abnormal Values: ${JSON.stringify(analysis.abnormalValues)}
+              Risk Assessment: ${analysis.riskPrediction.level} - ${analysis.riskPrediction.explanation}
+              Next Steps: ${analysis.riskPrediction.nextSteps.join(', ')}
+              
+              User Profile: ${userProfile.age} year old ${userProfile.gender}, Blood ${userProfile.bloodType}, Allergies: ${userProfile.allergies.join(', ')}, Chronic Conditions: ${userProfile.chronicConditions.join(', ')}.
+              
+              USER QUESTION: ${message}
+              
+              INSTRUCTIONS:
+              - Answer the user's question based on the report data provided.
+              - Use SHORT, SIMPLE, and friendly language suitable for an elderly person.
+              - Do NOT provide medical diagnosis.
+              - Always advise to consult a doctor for clinical decisions.
+            `,
+          },
+        ],
+      },
+    ],
+  });
+
+  const response = await model;
+  return response.text;
+};
+
 export const chatWithAI = async (
   message: string,
   history: { role: 'user' | 'model'; parts: { text: string }[] }[],
@@ -84,8 +124,6 @@ export const chatWithAI = async (
     },
   });
 
-  // Since ai.chats.create might not strictly use the same history format in the snippet, 
-  // we follow the basic chat interaction.
   const response = await chat.sendMessage({ message });
-  return response.text;
+  return (response as any).text;
 };

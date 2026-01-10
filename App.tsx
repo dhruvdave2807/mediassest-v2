@@ -86,7 +86,7 @@ const AppContent = () => {
       <Route path="/signup" element={<SignUpScreen onSignUp={handleUserUpdate} />} />
       <Route path="/home" element={<Layout><HomeScreen user={user} /></Layout>} />
       <Route path="/upload" element={<UploadScreen onUpload={handleUpload} />} />
-      <Route path="/analysis" element={<Layout><AnalysisScreen analysis={currentAnalysis} loading={isAnalyzing} /></Layout>} />
+      <Route path="/analysis" element={<Layout><AnalysisScreen analysis={currentAnalysis} loading={isAnalyzing} userProfile={user} /></Layout>} />
       <Route path="/chat" element={<Layout><ChatScreen user={user} /></Layout>} />
       <Route path="/library" element={<Layout><LibraryScreen records={records} /></Layout>} />
       <Route path="/profile" element={<Layout><ProfileScreen user={user} language={language} onLanguageChange={setLanguage} onUserUpdate={handleUserUpdate} /></Layout>} />
