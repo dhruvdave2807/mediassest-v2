@@ -8,6 +8,10 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 3000,
       host: '0.0.0.0',
+      // This section fixes the "Blocked request" error
+      allowedHosts: [
+        'mediassest-v2.onrender.com'
+      ]
     },
     plugins: [react()],
     define: {
