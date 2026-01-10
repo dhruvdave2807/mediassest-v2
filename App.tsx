@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { HashRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import { LandingScreen } from './screens/LandingScreen';
 import { SplashScreen } from './screens/SplashScreen';
 import { LoginScreen } from './screens/LoginScreen';
 import { HomeScreen } from './screens/HomeScreen';
@@ -62,7 +63,7 @@ const AppContent = () => {
 
       const result = await analyzeMedicalReport(base64, user);
       setCurrentAnalysis(result);
-      
+
       // Add to records
       const newRecord: MedicalRecord = {
         id: Math.random().toString(36).substr(2, 9),
@@ -82,9 +83,10 @@ const AppContent = () => {
 
   return (
     <Routes>
+      <Route path="/" element={<LandingScreen />} />
       <Route path="/splash" element={<SplashScreen />} />
       <Route path="/login" element={<LoginScreen />} />
-      <Route path="/" element={<Layout><HomeScreen user={user} /></Layout>} />
+      <Route path="/home" element={<Layout><HomeScreen user={user} /></Layout>} />
       <Route path="/upload" element={<UploadScreen onUpload={handleUpload} />} />
       <Route path="/analysis" element={<Layout><AnalysisScreen analysis={currentAnalysis} loading={isAnalyzing} /></Layout>} />
       <Route path="/chat" element={<Layout><ChatScreen user={user} /></Layout>} />

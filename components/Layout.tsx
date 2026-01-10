@@ -4,7 +4,7 @@ import { Home, ClipboardList, MessageSquare, Bell, User, PlusCircle } from 'luci
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const navItems = [
-  { path: '/', icon: Home, label: 'Home' },
+  { path: '/home', icon: Home, label: 'Home' },
   { path: '/library', icon: ClipboardList, label: 'Records' },
   { path: '/chat', icon: MessageSquare, label: 'Chat' },
   { path: '/reminders', icon: Bell, label: 'Reminders' },
@@ -22,7 +22,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
       </main>
 
       {/* Floating Action Button for Upload (Mobile feel) */}
-      <button 
+      <button
         onClick={() => navigate('/upload')}
         className="fixed bottom-24 right-6 bg-teal-600 text-white p-4 rounded-full shadow-lg hover:bg-teal-700 transition-all z-20 md:hidden"
       >
@@ -37,9 +37,8 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
             <button
               key={item.path}
               onClick={() => navigate(item.path)}
-              className={`flex flex-col items-center gap-1 transition-colors ${
-                isActive ? 'text-teal-600 font-semibold' : 'text-slate-400'
-              }`}
+              className={`flex flex-col items-center gap-1 transition-colors ${isActive ? 'text-teal-600 font-semibold' : 'text-slate-400'
+                }`}
             >
               <item.icon size={24} />
               <span className="text-xs">{item.label}</span>

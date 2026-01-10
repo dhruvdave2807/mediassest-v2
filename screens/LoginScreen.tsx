@@ -9,7 +9,7 @@ export const LoginScreen = () => {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    navigate('/');
+    navigate('/home');
   };
 
   return (
