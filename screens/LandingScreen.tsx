@@ -40,6 +40,13 @@ export const LandingScreen: React.FC = () => {
     navigate('/login');
   };
 
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className="landing-body">
       {/* Navigation */}
@@ -53,11 +60,11 @@ export const LandingScreen: React.FC = () => {
               <span className="text-2xl font-bold tracking-tight text-slate-800">Medi<span className="text-sky-500">Assest</span></span>
             </div>
             <div className="hidden md:flex items-center gap-10 text-sm font-semibold text-slate-600">
-              <a href="#features" className="hover:text-sky-500 transition-colors">Features</a>
-              <a href="#analytics" className="hover:text-sky-500 transition-colors">Analytics</a>
-              <a href="#security" className="hover:text-sky-500 transition-colors">Security</a>
+              <button onClick={() => scrollToSection('features')} className="hover:text-sky-500 transition-colors">Features</button>
+              <button onClick={() => scrollToSection('analytics')} className="hover:text-sky-500 transition-colors">Analytics</button>
+              <button onClick={() => scrollToSection('security')} className="hover:text-sky-500 transition-colors">Security</button>
               <button
-                onClick={handleGetStarted}
+                onClick={() => scrollToSection('get-started')}
                 className="bg-sky-500 text-white px-7 py-3 rounded-xl hover:bg-sky-600 transition shadow-lg shadow-sky-200 active:scale-95"
               >
                 Get Started
@@ -91,11 +98,12 @@ export const LandingScreen: React.FC = () => {
                 The smart medical companion that turns complex lab reports into plain English and identifies early health risks using advanced clinical AI.
               </p>
               <div className="flex flex-col sm:flex-row gap-5">
-                <a href="#get-started"
+                <button
+                  onClick={() => scrollToSection('get-started')}
                   className="flex items-center justify-center gap-3 bg-sky-500 text-white px-10 py-5 rounded-2xl hover:bg-sky-600 transition-all transform hover:-translate-y-1 hover:scale-105 active:scale-95 shadow-xl font-black animate-button-pulse">
                   <span className="text-lg">Get Started Now</span>
                   <ArrowRight className="w-5 h-5 animate-arrow-slide" />
-                </a>
+                </button>
                 <button
                   onClick={() => { alert('Demo video will open here.'); }}
                   className="flex items-center justify-center gap-3 bg-white border border-slate-200 text-slate-700 px-10 py-5 rounded-2xl hover:border-sky-300 hover:bg-sky-50 transition-all transform hover:-translate-y-1 hover:scale-105 active:scale-95 shadow-md group">
@@ -159,10 +167,10 @@ export const LandingScreen: React.FC = () => {
             </div>
           </div>
         </div>
-      </section >
+      </section>
 
       {/* Features Section */}
-      < section id="features" className="py-32 bg-white relative" >
+      <section id="features" className="py-32 bg-white relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-20" data-aos="fade-up">
             <h2 className="text-sky-500 font-black tracking-widest uppercase text-xs mb-4">Features</h2>
@@ -197,10 +205,10 @@ export const LandingScreen: React.FC = () => {
             </div>
           </div>
         </div>
-      </section >
+      </section>
 
       {/* Analytics Showcase */}
-      < section id="analytics" className="py-24 bg-slate-900 overflow-hidden relative" >
+      <section id="analytics" className="py-24 bg-slate-900 overflow-hidden relative">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-0 left-0 w-full h-full" style={{ backgroundImage: 'radial-gradient(#38bdf8 1px, transparent 1px)', backgroundSize: '30px 30px' }}></div>
         </div>
@@ -261,10 +269,10 @@ export const LandingScreen: React.FC = () => {
             </div>
           </div>
         </div>
-      </section >
+      </section>
 
       {/* Final CTA */}
-      < section className="py-32 relative overflow-hidden" >
+      <section id="get-started" className="py-32 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="zoom-in">
           <div className="bg-gradient-to-br from-sky-600 to-blue-700 p-16 rounded-[3rem] shadow-2xl relative overflow-hidden group">
             {/* Sparkle background effects */}
@@ -295,10 +303,10 @@ export const LandingScreen: React.FC = () => {
             </div>
           </div>
         </div>
-      </section >
+      </section>
 
       {/* Footer */}
-      < footer className="bg-white py-20 border-t border-slate-100" >
+      <footer className="bg-white py-20 border-t border-slate-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-12 mb-16">
             <div className="col-span-2">
@@ -337,7 +345,7 @@ export const LandingScreen: React.FC = () => {
             <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">Built with Heart & AI</p>
           </div>
         </div>
-      </footer >
-    </div >
+      </footer>
+    </div>
   );
 };
