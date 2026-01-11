@@ -14,6 +14,10 @@ import { ProfileScreen } from './screens/ProfileScreen';
 import { Layout } from './components/Layout';
 import { UserProfile, MedicalRecord, AIAnalysis, Language } from './types';
 import { analyzeMedicalReport } from './geminiService';
+import { auth, db } from "./firebase";
+import { onAuthStateChanged } from "firebase/auth";
+import { doc, getDoc, collection, addDoc, getDocs, query, orderBy } from "firebase/firestore";
+import { generateEmbedding } from './geminiService';
 
 const MOCK_USER: UserProfile = {
   name: 'Robert Wilson',
@@ -37,6 +41,54 @@ const AppContent = () => {
   const [currentAnalysis, setCurrentAnalysis] = useState<AIAnalysis | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        // Fetch user profile from Firestore
+        const userDoc = await getDoc(doc(db, "users", firebaseUser.uid));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          setUser({
+            name: userData.name,
+            age: userData.age,
+            gender: userData.gender,
+            bloodType: userData.bloodType,
+            allergies: userData.allergies || [],
+            chronicConditions: userData.chronicConditions || [],
+          });
+        }
+
+        // Fetch User Reports from Firestore
+        const reportsRef = collection(db, "users", firebaseUser.uid, "reports");
+        const q = query(reportsRef, orderBy("timestamp", "desc"));
+        const querySnapshot = await getDocs(q);
+
+        const fetchedRecords: MedicalRecord[] = querySnapshot.docs.map(doc => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            date: new Date(data.timestamp).toISOString().split('T')[0],
+            type: 'AI Analyzed',
+            title: data.summary ? 'AI Analysis' : data.fileName,
+            fileName: data.fileName,
+            // analysis: data // could store full analysis if available, or fetch on demand
+          } as MedicalRecord;
+        });
+
+        if (fetchedRecords.length > 0) {
+          setRecords(fetchedRecords);
+        }
+
+        console.log("Logged in as:", firebaseUser.uid);
+      } else {
+        // User logged out
+        setUser(MOCK_USER); // Fallback to mock or redirect
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   const handleUserUpdate = (updatedUser: UserProfile) => {
     setUser(updatedUser);
   };
@@ -45,7 +97,6 @@ const AppContent = () => {
     setIsAnalyzing(true);
     try {
       // Create a base64 from the image for Gemini
-      // For this demo, we'll use a placeholder base64 or read if it's an image
       let base64 = "";
       if (file.type.startsWith('image/')) {
         const reader = new FileReader();
@@ -54,14 +105,29 @@ const AppContent = () => {
           reader.readAsDataURL(file);
         });
       } else {
-        // Mock base64 for PDF or other files in this demo env
         base64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
       }
 
       const result = await analyzeMedicalReport(base64, user);
+
+      // Save to Firestore for future RAG retrieval if user is authenticated
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        // Generate embedding for the summary
+        const embedding = await generateEmbedding(result.summary);
+
+        await addDoc(collection(db, "users", currentUser.uid, "reports"), {
+          fileName: file.name,
+          summary: result.summary,
+          embedding: embedding, // 768-dimension vector for text-embedding-004
+          abnormalValues: result.abnormalValues,
+          timestamp: new Date().toISOString(),
+        });
+      }
+
       setCurrentAnalysis(result);
 
-      // Add to records
+      // Add to local records
       const newRecord: MedicalRecord = {
         id: Math.random().toString(36).substr(2, 9),
         date: new Date().toISOString().split('T')[0],
@@ -72,7 +138,7 @@ const AppContent = () => {
       };
       setRecords(prev => [newRecord, ...prev]);
     } catch (err) {
-      console.error("Analysis failed", err);
+      console.error("Analysis or Store failed", err);
     } finally {
       setIsAnalyzing(false);
     }

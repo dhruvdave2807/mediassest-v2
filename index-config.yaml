@@ -1,0 +1,3 @@
+--collection-group: reports
+--query-scope: COLLECTION
+--field-config: field-path=embedding,vector-config={"dimension":"768","flat":"{}"}

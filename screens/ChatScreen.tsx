@@ -4,6 +4,8 @@ import { Send, User, Bot, AlertCircle, Loader2, Sparkles, ArrowLeft, Brain } fro
 import { useNavigate } from 'react-router-dom';
 import { chatWithAI } from '../geminiService';
 import { UserProfile } from '../types';
+import { auth, functions } from '../firebase';
+import { httpsCallable } from "firebase/functions";
 
 interface Message {
   role: 'user' | 'model';
@@ -32,14 +34,29 @@ export const ChatScreen: React.FC<{ user: UserProfile }> = ({ user }) => {
     setIsTyping(true);
 
     try {
-      const response = await chatWithAI(
-        userMsg,
-        messages.map(m => ({ role: m.role, parts: [{ text: m.text }] })),
-        user
-      );
-      setMessages(prev => [...prev, { role: 'model', text: response || "I'm sorry, I couldn't process that. Can you try again?" }]);
+      const chatWithHistory = httpsCallable(functions, 'chatWithHistory');
+
+      const result = await chatWithHistory({
+        message: userMsg,
+        userId: auth.currentUser?.uid || "mock-user"
+      });
+
+      const data = result.data as { answer: string };
+      setMessages(prev => [...prev, { role: 'model', text: data.answer || "I'm sorry, I couldn't process that. Can you try again?" }]);
     } catch (err) {
-      setMessages(prev => [...prev, { role: 'model', text: "I'm having a little trouble connecting. Please check your internet and try again." }]);
+      console.error("Cloud Function Error:", err);
+      // Fallback to direct AI if cloud function fails (e.g. not deployed yet)
+      try {
+        const response = await chatWithAI(
+          userMsg,
+          messages.map(m => ({ role: m.role, parts: [{ text: m.text }] })),
+          user,
+          auth.currentUser?.uid
+        );
+        setMessages(prev => [...prev, { role: 'model', text: response || "Direct AI fallback error." }]);
+      } catch (fallbackErr) {
+        setMessages(prev => [...prev, { role: 'model', text: "I'm having trouble connecting to both our cloud and AI services." }]);
+      }
     } finally {
       setIsTyping(false);
     }
@@ -75,8 +92,8 @@ export const ChatScreen: React.FC<{ user: UserProfile }> = ({ user }) => {
           <div key={idx} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-2`}>
             <div
               className={`max-w-[85%] px-6 py-5 rounded-[2.5rem] shadow-xl text-lg font-medium leading-relaxed ${m.role === 'user'
-                  ? 'bg-slate-900 text-white rounded-tr-none shadow-slate-900/10'
-                  : 'bg-white text-slate-800 border-2 border-slate-50 rounded-tl-none shadow-teal-900/5'
+                ? 'bg-slate-900 text-white rounded-tr-none shadow-slate-900/10'
+                : 'bg-white text-slate-800 border-2 border-slate-50 rounded-tl-none shadow-teal-900/5'
                 }`}
             >
               {m.text}
@@ -118,8 +135,8 @@ export const ChatScreen: React.FC<{ user: UserProfile }> = ({ user }) => {
             onClick={handleSend}
             disabled={!input.trim() || isTyping}
             className={`absolute right-3 top-3 bottom-3 px-6 rounded-[2rem] flex items-center justify-center gap-2 transition-all ${input.trim() && !isTyping
-                ? 'bg-teal-600 text-white shadow-xl shadow-teal-600/30 active:scale-95'
-                : 'bg-slate-100 text-slate-300'
+              ? 'bg-teal-600 text-white shadow-xl shadow-teal-600/30 active:scale-95'
+              : 'bg-slate-100 text-slate-300'
               }`}
           >
             <Send size={24} />

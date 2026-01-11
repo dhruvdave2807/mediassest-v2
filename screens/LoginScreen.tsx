@@ -1,15 +1,31 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Mail, Lock, ChevronRight, Fingerprint, ShieldCheck, ArrowLeft } from 'lucide-react';
+import { Mail, Lock, ChevronRight, Fingerprint, ShieldCheck, ArrowLeft, AlertCircle } from 'lucide-react';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../firebase';
 
 export const LoginScreen = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    navigate('/home');
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      navigate('/home');
+    } catch (err: any) {
+      console.error("Login Error:", err.message);
+      setError(err.message || "Invalid email or password. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -51,15 +67,25 @@ export const LoginScreen = () => {
               required
               className="w-full pl-14 pr-6 py-5 bg-white border-2 border-slate-100 rounded-3xl focus:border-teal-500/50 focus:bg-white outline-none transition-all shadow-sm text-lg font-bold"
               placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
         </div>
 
+        {error && (
+          <div className="p-4 bg-rose-50 border border-rose-100 rounded-2xl text-rose-600 text-sm font-bold flex items-center gap-2 animate-in fade-in slide-in-from-top-2">
+            <AlertCircle size={18} />
+            {error}
+          </div>
+        )}
+
         <button
           type="submit"
-          className="w-full py-6 bg-slate-900 text-white rounded-3xl font-black text-2xl shadow-2xl shadow-slate-900/20 flex items-center justify-center gap-3 hover:bg-black transition-all active:scale-[0.98]"
+          disabled={isLoading}
+          className="w-full py-6 bg-slate-900 text-white rounded-3xl font-black text-2xl shadow-2xl shadow-slate-900/20 flex items-center justify-center gap-3 hover:bg-black transition-all active:scale-[0.98] disabled:opacity-50"
         >
-          Sign In <ChevronRight size={28} />
+          {isLoading ? "Signing In..." : "Sign In"} <ChevronRight size={28} />
         </button>
       </form>
 

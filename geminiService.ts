@@ -2,7 +2,11 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { UserProfile, AIAnalysis, RiskLevel } from "./types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+import { db } from "./firebase";
+import { collection, query, orderBy, limit, getDocs } from "firebase/firestore";
+// Note: Client-side vector search might require 'vector-search' preview or Cloud Functions.
+// For this demo, we will implement a simplified 'recent reports' context retrieval as a baseline for RAG.
+const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY || '' });
 
 export const analyzeMedicalReport = async (
   base64Image: string,
@@ -107,20 +111,79 @@ export const chatWithReport = async (
   return response.text;
 };
 
+export const generateEmbedding = async (text: string) => {
+  try {
+    const result = await ai.models.embedContent({
+      model: 'text-embedding-004',
+      contents: [{ parts: [{ text }] }]
+    });
+
+    // Support both @google/genai and @google/generative-ai formats
+    if (result.embeddings && result.embeddings.length > 0) {
+      return result.embeddings[0].values;
+    }
+    if ((result as any).embedding) {
+      return (result as any).embedding.values;
+    }
+
+    return [];
+  } catch (error) {
+    console.error("Frontend Embedding Error:", error);
+    return [];
+  }
+};
+
+export const getRelevantContext = async (uid: string, queryText: string) => {
+  try {
+    // Generate query embedding
+    const queryVector = await generateEmbedding(queryText);
+
+    // FETCHING CONTEXT: 
+    // In a full production app, you'd use Firestore Vector Search (VectorQuery) here.
+    // For this implementation, we fetch the last 3 reports to provide historical context.
+    const reportsRef = collection(db, "users", uid, "reports");
+    const q = query(reportsRef, orderBy("timestamp", "desc"), limit(3));
+    const querySnapshot = await getDocs(q);
+
+    let context = "PAST MEDICAL HISTORY & PREVIOUS ANALYSES:\n";
+    if (querySnapshot.empty) return "No prior reports found.";
+
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      context += `- Report (${data.fileName}, ${new Date(data.timestamp).toLocaleDateString()}): ${data.summary}\n`;
+    });
+
+    return context;
+  } catch (error) {
+    console.error("RAG Retrieval Error:", error);
+    return "Error retrieving past medical context.";
+  }
+};
+
 export const chatWithAI = async (
   message: string,
   history: { role: 'user' | 'model'; parts: { text: string }[] }[],
-  userProfile: UserProfile
+  userProfile: UserProfile,
+  uid?: string
 ) => {
+  // 1. Retrieve Context if user is logged in
+  let medicalContext = "";
+  if (uid) {
+    medicalContext = await getRelevantContext(uid, message);
+  }
+
   const chat = ai.chats.create({
     model: 'gemini-3-flash-preview',
     config: {
-      systemInstruction: `You are MediAssest, a compassionate and knowledgeable personal healthcare chatbot. 
-      You are speaking to a ${userProfile.age}-year-old user named ${userProfile.name}.
-      Current user profile: Gender: ${userProfile.gender}, Blood: ${userProfile.bloodType}, Allergies: ${userProfile.allergies.join(', ')}, Chronic Conditions: ${userProfile.chronicConditions.join(', ')}.
-      Your goal is to explain health concepts simply, offer friendly reminders, and support their wellness journey. 
-      NEVER provide formal medical diagnosis. Always include a reminder to consult a doctor for serious concerns. 
-      Use simple language suitable for elderly users.`,
+      systemInstruction: `You are MediAssest, a compassionate healthcare chatbot. 
+      USER INFO: ${userProfile.name}, ${userProfile.age}y/o, Blood ${userProfile.bloodType}, Allergies: ${userProfile.allergies.join(', ')}.
+      
+      ${medicalContext ? `RELEVANT CONTEXT FROM USER'S PAST REPORTS:\n${medicalContext}` : ""}
+      
+      INSTRUCTIONS:
+      - Use the provided context from past reports to answer question if relevant (e.g., if they ask about trends).
+      - Explain concepts simply for an elderly person.
+      - NEVER diagnose. Always advise consulting a doctor.`,
     },
   });
 

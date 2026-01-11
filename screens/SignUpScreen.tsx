@@ -1,7 +1,10 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Calendar, ChevronRight, Activity, ArrowLeft, Heart, Sparkles } from 'lucide-react';
+import { User, Calendar, ChevronRight, Activity, ArrowLeft, Heart, Sparkles, Mail, Lock, AlertCircle } from 'lucide-react';
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
+import { auth, db } from "../firebase";
 import { UserProfile } from '../types';
 
 interface SignUpScreenProps {
@@ -12,23 +15,50 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ onSignUp }) => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         name: '',
+        email: '',
+        password: '',
         age: '',
         gender: 'Male',
         bloodType: 'O+',
     });
+    const [isRegistering, setIsRegistering] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const newUser: UserProfile = {
-            name: formData.name,
-            age: parseInt(formData.age),
-            gender: formData.gender,
-            bloodType: formData.bloodType,
-            allergies: [],
-            chronicConditions: [],
-        };
-        onSignUp(newUser);
-        navigate('/home');
+        setIsRegistering(true);
+        setError(null);
+
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+            const user = userCredential.user;
+
+            const newUser: UserProfile = {
+                name: formData.name,
+                age: parseInt(formData.age),
+                gender: formData.gender,
+                bloodType: formData.bloodType,
+                allergies: [],
+                chronicConditions: [],
+            };
+
+            // Save initial profile to Firestore
+            await setDoc(doc(db, "users", user.uid), {
+                name: newUser.name,
+                age: newUser.age,
+                gender: newUser.gender,
+                bloodType: newUser.bloodType,
+                email: formData.email,
+                createdAt: new Date().toISOString()
+            });
+
+            onSignUp(newUser);
+            navigate('/home');
+        } catch (err: any) {
+            console.error("Auth Error:", err.message);
+            setError(err.message || "An error occurred during registration.");
+            setIsRegistering(false);
+        }
     };
 
     return (
@@ -55,6 +85,41 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ onSignUp }) => {
                             placeholder="e.g. Robert Wilson"
                             value={formData.name}
                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        />
+                    </div>
+                </div>
+
+                <div className="space-y-3">
+                    <label className="text-sm font-black text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
+                    <div className="relative group">
+                        <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-teal-600 transition-colors">
+                            <Mail size={24} />
+                        </div>
+                        <input
+                            type="email"
+                            required
+                            className="w-full pl-14 pr-6 py-5 bg-white border-2 border-slate-100 rounded-3xl focus:border-teal-500/50 focus:bg-white outline-none transition-all shadow-sm text-lg font-bold"
+                            placeholder="email@example.com"
+                            value={formData.email}
+                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        />
+                    </div>
+                </div>
+
+                <div className="space-y-3">
+                    <label className="text-sm font-black text-slate-400 uppercase tracking-widest ml-1">Password</label>
+                    <div className="relative group">
+                        <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-teal-600 transition-colors">
+                            <Lock size={24} />
+                        </div>
+                        <input
+                            type="password"
+                            required
+                            minLength={6}
+                            className="w-full pl-14 pr-6 py-5 bg-white border-2 border-slate-100 rounded-3xl focus:border-teal-500/50 focus:bg-white outline-none transition-all shadow-sm text-lg font-bold"
+                            placeholder="Min. 6 characters"
+                            value={formData.password}
+                            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                         />
                     </div>
                 </div>
@@ -110,11 +175,19 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ onSignUp }) => {
                     </div>
                 </div>
 
+                {error && (
+                    <div className="p-4 bg-rose-50 border border-rose-100 rounded-2xl text-rose-600 text-sm font-bold flex items-center gap-2">
+                        <AlertCircle size={18} />
+                        {error}
+                    </div>
+                )}
+
                 <button
                     type="submit"
-                    className="w-full py-6 bg-slate-900 text-white rounded-3xl font-black text-2xl shadow-2xl shadow-slate-900/20 flex items-center justify-center gap-3 hover:bg-black transition-all active:scale-[0.98] mt-4"
+                    disabled={isRegistering}
+                    className="w-full py-6 bg-slate-900 text-white rounded-3xl font-black text-2xl shadow-2xl shadow-slate-900/20 flex items-center justify-center gap-3 hover:bg-black transition-all active:scale-[0.98] mt-4 disabled:opacity-50"
                 >
-                    Start Analysis <ChevronRight size={28} />
+                    {isRegistering ? "Creating..." : "Start Analysis"} <ChevronRight size={28} />
                 </button>
 
                 <div className="text-center">
