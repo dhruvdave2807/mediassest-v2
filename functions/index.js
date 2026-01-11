@@ -26,14 +26,21 @@ exports.chatWithHistory = onCall({ secrets: ["GEMINI_API_KEY"] }, async (request
             distanceMeasure: "COSINE"
         });
 
-        const snapshot = await vectorQuery.get();
-
         let pastContext = "No prior relevant reports found.";
-        if (!snapshot.empty) {
-            pastContext = snapshot.docs.map(doc => {
-                const data = doc.data();
-                return `Summary of ${data.fileName}: ${data.summary}`;
-            }).join("\n---\n");
+        let sources = [];
+
+        try {
+            const snapshot = await vectorQuery.get();
+            if (!snapshot.empty) {
+                pastContext = snapshot.docs.map(doc => {
+                    const data = doc.data();
+                    return `Summary of ${data.fileName}: ${data.summary}`;
+                }).join("\n---\n");
+                sources = snapshot.docs.map(doc => doc.data().fileName);
+            }
+        } catch (queryError) {
+            console.log("Vector Search skipped or failed (likely no index yet):", queryError.message);
+            // Fallback: Proceed without history instead of crashing
         }
 
         // 3. GENERATE: Send context + question to Gemini
@@ -55,7 +62,8 @@ exports.chatWithHistory = onCall({ secrets: ["GEMINI_API_KEY"] }, async (request
         const chatResponse = await chatModel.generateContent(finalPrompt);
         return {
             answer: chatResponse.response.text(),
-            sources: snapshot.docs.map(doc => doc.data().fileName)
+            answer: chatResponse.response.text(),
+            sources: sources.length > 0 ? sources : []
         };
     } catch (error) {
         console.error("Cloud Function RAG Error:", error);

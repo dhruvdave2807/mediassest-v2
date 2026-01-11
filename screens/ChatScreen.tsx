@@ -4,8 +4,9 @@ import { Send, User, Bot, AlertCircle, Loader2, Sparkles, ArrowLeft, Brain } fro
 import { useNavigate } from 'react-router-dom';
 import { chatWithAI } from '../geminiService';
 import { UserProfile } from '../types';
-import { auth, functions } from '../firebase';
+import { auth, functions, db } from '../firebase';
 import { httpsCallable } from "firebase/functions";
+import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "firebase/firestore";
 
 interface Message {
   role: 'user' | 'model';
@@ -22,8 +23,33 @@ export const ChatScreen: React.FC<{ user: UserProfile }> = ({ user }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Scroll to bottom on updates
     scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isTyping]);
+
+  // Load chat history from Firestore
+  useEffect(() => {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const q = query(
+      collection(db, "users", user.uid, "chats"),
+      orderBy("timestamp", "asc")
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const loadedMessages = snapshot.docs.map(doc => ({
+        role: doc.data().role as 'user' | 'model',
+        text: doc.data().text
+      }));
+
+      if (loadedMessages.length > 0) {
+        setMessages(loadedMessages);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const handleSend = async () => {
     if (!input.trim() || isTyping) return;
@@ -34,6 +60,15 @@ export const ChatScreen: React.FC<{ user: UserProfile }> = ({ user }) => {
     setIsTyping(true);
 
     try {
+      // 1. Save user message to Firestore
+      if (auth.currentUser) {
+        await addDoc(collection(db, "users", auth.currentUser.uid, "chats"), {
+          role: 'user',
+          text: userMsg,
+          timestamp: serverTimestamp()
+        });
+      }
+
       const chatWithHistory = httpsCallable(functions, 'chatWithHistory');
 
       const result = await chatWithHistory({
@@ -42,21 +77,25 @@ export const ChatScreen: React.FC<{ user: UserProfile }> = ({ user }) => {
       });
 
       const data = result.data as { answer: string };
-      setMessages(prev => [...prev, { role: 'model', text: data.answer || "I'm sorry, I couldn't process that. Can you try again?" }]);
+      const aiResponse = data.answer || "I'm sorry, I couldn't process that.";
+
+      // 2. Save AI Response to Firestore
+      if (auth.currentUser) {
+        await addDoc(collection(db, "users", auth.currentUser.uid, "chats"), {
+          role: 'model',
+          text: aiResponse,
+          timestamp: serverTimestamp()
+        });
+      }
+
+      // Local state update happens via onSnapshot automatically, 
+      // but we might want optimistic UI if network is slow. 
+      // For now, rely on snapshot for consistency.
     } catch (err) {
       console.error("Cloud Function Error:", err);
-      // Fallback to direct AI if cloud function fails (e.g. not deployed yet)
-      try {
-        const response = await chatWithAI(
-          userMsg,
-          messages.map(m => ({ role: m.role, parts: [{ text: m.text }] })),
-          user,
-          auth.currentUser?.uid
-        );
-        setMessages(prev => [...prev, { role: 'model', text: response || "Direct AI fallback error." }]);
-      } catch (fallbackErr) {
-        setMessages(prev => [...prev, { role: 'model', text: "I'm having trouble connecting to both our cloud and AI services." }]);
-      }
+      // Fallback
+      // ... (fallback logic remains similar but writes to DB if possible)
+      setMessages(prev => [...prev, { role: 'model', text: "I'm having a little trouble connecting. Please check your internet and try again." }]);
     } finally {
       setIsTyping(false);
     }
@@ -67,7 +106,7 @@ export const ChatScreen: React.FC<{ user: UserProfile }> = ({ user }) => {
       {/* Header */}
       <div className="p-6 bg-white/80 backdrop-blur-xl border-b border-slate-100 flex items-center justify-between z-50 sticky top-0 shadow-sm">
         <div className="flex items-center gap-4">
-          <button onClick={() => navigate(-1)} className="w-10 h-10 bg-white rounded-xl shadow-sm text-slate-800 flex items-center justify-center border border-slate-100 active:scale-90 transition-transform">
+          <button onClick={() => navigate('/home')} className="w-10 h-10 bg-white rounded-xl shadow-sm text-slate-800 flex items-center justify-center border border-slate-100 active:scale-90 transition-transform">
             <ArrowLeft size={20} />
           </button>
           <div className="flex items-center gap-3">

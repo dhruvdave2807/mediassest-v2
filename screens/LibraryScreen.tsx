@@ -4,7 +4,7 @@ import { Search, Filter, FileText, ChevronRight, Share2, MoreVertical, Plus, Arr
 import { useNavigate } from 'react-router-dom';
 import { MedicalRecord } from '../types';
 
-export const LibraryScreen: React.FC<{ records: MedicalRecord[] }> = ({ records }) => {
+export const LibraryScreen: React.FC<{ records: MedicalRecord[], onSelectReport?: (r: MedicalRecord) => void }> = ({ records, onSelectReport }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('All');
   const navigate = useNavigate();
@@ -18,7 +18,7 @@ export const LibraryScreen: React.FC<{ records: MedicalRecord[] }> = ({ records 
     <div className="p-6 pb-28 space-y-8 hero-gradient min-h-full">
       <div className="flex justify-between items-center pt-4">
         <div className="flex items-center gap-4">
-          <button onClick={() => navigate(-1)} className="w-10 h-10 bg-white rounded-xl shadow-sm text-slate-800 flex items-center justify-center border border-slate-100 active:scale-90 transition-transform">
+          <button onClick={() => navigate('/home')} className="w-10 h-10 bg-white rounded-xl shadow-sm text-slate-800 flex items-center justify-center border border-slate-100 active:scale-90 transition-transform">
             <ArrowLeft size={20} />
           </button>
           <h1 className="text-3xl font-black text-slate-900 leading-tight">Records</h1>
@@ -56,7 +56,12 @@ export const LibraryScreen: React.FC<{ records: MedicalRecord[] }> = ({ records 
       <div className="space-y-6">
         {filteredRecords.length > 0 ? (
           filteredRecords.map((record) => (
-            <div key={record.id} className="bg-white p-6 rounded-[2.5rem] border-2 border-slate-50 hover:border-teal-100 transition-all flex items-center gap-5 group shadow-sm hover:shadow-xl cursor-pointer">
+            <div key={record.id} onClick={() => {
+              if (onSelectReport && record.analysis) {
+                onSelectReport(record);
+                navigate('/analysis');
+              }
+            }} className="bg-white p-6 rounded-[2.5rem] border-2 border-slate-50 hover:border-teal-100 transition-all flex items-center gap-5 group shadow-sm hover:shadow-xl cursor-pointer">
               <div className="w-16 h-16 bg-slate-50 text-slate-400 rounded-3xl flex items-center justify-center shrink-0 border border-slate-50 group-hover:bg-teal-50 group-hover:text-teal-600 transition-colors">
                 <FileText size={32} />
               </div>

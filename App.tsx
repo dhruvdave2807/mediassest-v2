@@ -12,11 +12,11 @@ import { ChatScreen } from './screens/ChatScreen';
 import { LibraryScreen } from './screens/LibraryScreen';
 import { ProfileScreen } from './screens/ProfileScreen';
 import { Layout } from './components/Layout';
-import { UserProfile, MedicalRecord, AIAnalysis, Language } from './types';
+import { UserProfile, MedicalRecord, AIAnalysis, Language, RiskLevel } from './types';
 import { analyzeMedicalReport } from './geminiService';
 import { auth, db } from "./firebase";
 import { onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc, collection, addDoc, getDocs, query, orderBy } from "firebase/firestore";
+import { doc, getDoc, collection, addDoc, getDocs, query, orderBy, vector, serverTimestamp, Timestamp } from "firebase/firestore";
 import { generateEmbedding } from './geminiService';
 
 const MOCK_USER: UserProfile = {
@@ -65,13 +65,31 @@ const AppContent = () => {
 
         const fetchedRecords: MedicalRecord[] = querySnapshot.docs.map(doc => {
           const data = doc.data();
+          // Handle both serverTimestamp (Timestamp object) and string dates
+          let dateStr = new Date().toISOString().split('T')[0];
+          if (data.timestamp) {
+            if (data.timestamp.toDate) {
+              dateStr = data.timestamp.toDate().toISOString().split('T')[0];
+            } else if (typeof data.timestamp === 'string') {
+              dateStr = new Date(data.timestamp).toISOString().split('T')[0];
+            }
+          }
+
           return {
             id: doc.id,
-            date: new Date(data.timestamp).toISOString().split('T')[0],
+            date: dateStr,
             type: 'AI Analyzed',
             title: data.summary ? 'AI Analysis' : data.fileName,
             fileName: data.fileName,
-            // analysis: data // could store full analysis if available, or fetch on demand
+            analysis: {
+              summary: data.summary,
+              abnormalValues: data.abnormalValues,
+              riskPrediction: {
+                level: 'Unknown',
+                explanation: 'Retrieved from history.',
+                nextSteps: []
+              }
+            } as any
           } as MedicalRecord;
         });
 
@@ -119,9 +137,9 @@ const AppContent = () => {
         await addDoc(collection(db, "users", currentUser.uid, "reports"), {
           fileName: file.name,
           summary: result.summary,
-          embedding: embedding, // 768-dimension vector for text-embedding-004
+          embedding: vector(embedding),
           abnormalValues: result.abnormalValues,
-          timestamp: new Date().toISOString(),
+          timestamp: serverTimestamp(),
         });
       }
 
@@ -144,6 +162,29 @@ const AppContent = () => {
     }
   };
 
+  const handleReportClick = (record: MedicalRecord) => {
+    if (record.analysis) {
+      // Hydrate the risk prediction if missing (backward compatibility)
+      const fullAnalysis: AIAnalysis = {
+        summary: record.analysis.summary,
+        abnormalValues: record.analysis.abnormalValues || [],
+        riskPrediction: record.analysis.riskPrediction || {
+          level: RiskLevel.LOW, // Default fallback
+          explanation: 'Historical report retrieved.',
+          nextSteps: ['Consult your doctor for details.']
+        }
+      };
+      setCurrentAnalysis(fullAnalysis);
+      // Use a small timeout to ensure state update before nav? 
+      // Actually React Router handles this fine usually.
+      // But we need to access 'navigate' here. AppContent renders Routes...
+      // We can't navigate from here easily without passing a prop or context.
+      // Wait, AppContent is inside Router? Yes.
+      // But AppContent doesn't have useHistory/useNavigate hook called.
+      // Let's rely on passing this handler to LibraryScreen which calls it then navigates.
+    }
+  };
+
   return (
     <Routes>
       <Route path="/" element={<LandingScreen />} />
@@ -154,7 +195,20 @@ const AppContent = () => {
       <Route path="/upload" element={<UploadScreen onUpload={handleUpload} />} />
       <Route path="/analysis" element={<Layout><AnalysisScreen analysis={currentAnalysis} loading={isAnalyzing} userProfile={user} /></Layout>} />
       <Route path="/chat" element={<Layout><ChatScreen user={user} /></Layout>} />
-      <Route path="/library" element={<Layout><LibraryScreen records={records} /></Layout>} />
+      <Route path="/library" element={<Layout><LibraryScreen records={records} onSelectReport={(r) => {
+        if (r.analysis) {
+          const fullAnalysis: AIAnalysis = {
+            summary: r.analysis.summary,
+            abnormalValues: r.analysis.abnormalValues || [],
+            riskPrediction: r.analysis.riskPrediction || {
+              level: RiskLevel.LOW,
+              explanation: 'Historical report retrieved.',
+              nextSteps: []
+            }
+          };
+          setCurrentAnalysis(fullAnalysis);
+        }
+      }} /></Layout>} />
       <Route path="/profile" element={<Layout><ProfileScreen user={user} language={language} onLanguageChange={setLanguage} onUserUpdate={handleUserUpdate} /></Layout>} />
     </Routes>
   );
