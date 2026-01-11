@@ -1,7 +1,8 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AlertTriangle, CheckCircle, Info, ChevronRight, Stethoscope, ArrowLeft, RefreshCcw, Sparkles, Send, Bot, User, Brain } from 'lucide-react';
+import { AlertTriangle, CheckCircle, Info, ChevronRight, Stethoscope, ArrowLeft, RefreshCcw, Sparkles, Send, Bot, User, Brain, Download } from 'lucide-react';
+import jsPDF from 'jspdf';
 import { UserProfile, AIAnalysis, RiskLevel } from '../types';
 import { chatWithReport } from '../geminiService';
 
@@ -43,6 +44,84 @@ export const AnalysisScreen: React.FC<AnalysisScreenProps> = ({ analysis, loadin
     } finally {
       setIsSending(false);
     }
+  };
+
+  const handleDownload = () => {
+    if (!analysis) return;
+    const doc = new jsPDF();
+
+    // Header
+    doc.setFontSize(22);
+    doc.setTextColor(0, 128, 128); // Teal color
+    doc.text('MediAssest AI Report Analysis', 20, 20);
+
+    doc.setFontSize(12);
+    doc.setTextColor(100);
+    doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 20, 30);
+
+    // Summary
+    doc.setFontSize(16);
+    doc.setTextColor(0);
+    doc.text('Summary', 20, 45);
+    doc.setFontSize(11);
+    doc.setTextColor(60);
+    const summaryLines = doc.splitTextToSize(analysis.summary, 170);
+    doc.text(summaryLines, 20, 55);
+    let yPos = 55 + (summaryLines.length * 7) + 10;
+
+    // Abnormal Values
+    if (analysis.abnormalValues.length > 0) {
+      doc.setFontSize(16);
+      doc.setTextColor(180, 83, 9); // Amber color
+      doc.text('Important Findings', 20, yPos);
+      yPos += 10;
+
+      analysis.abnormalValues.forEach(val => {
+        if (yPos > 270) { doc.addPage(); yPos = 20; }
+
+        doc.setFontSize(12);
+        doc.setTextColor(0);
+        doc.text(`${val.parameter}: ${val.value} (Range: ${val.range})`, 20, yPos);
+        yPos += 6;
+
+        doc.setFontSize(10);
+        doc.setTextColor(80);
+        const noteLines = doc.splitTextToSize(`Note: ${val.note}`, 160);
+        doc.text(noteLines, 25, yPos);
+        yPos += (noteLines.length * 5) + 5;
+      });
+      yPos += 5;
+    }
+
+    // Risk
+    if (yPos > 250) { doc.addPage(); yPos = 20; }
+    doc.setFontSize(16);
+    doc.setTextColor(0);
+    doc.text(`Health Risk Assessment: ${analysis.riskPrediction.level}`, 20, yPos);
+    yPos += 10;
+
+    doc.setFontSize(11);
+    doc.setTextColor(60);
+    const riskExpl = doc.splitTextToSize(analysis.riskPrediction.explanation, 170);
+    doc.text(riskExpl, 20, yPos);
+    yPos += (riskExpl.length * 6) + 10;
+
+    // Next Steps
+    if (yPos > 250) { doc.addPage(); yPos = 20; }
+    doc.setFontSize(14);
+    doc.setTextColor(0);
+    doc.text('Recommended Next Steps', 20, yPos);
+    yPos += 10;
+
+    doc.setFontSize(11);
+    doc.setTextColor(60);
+    analysis.riskPrediction.nextSteps.forEach((step, i) => {
+      const stepLines = doc.splitTextToSize(`${i + 1}. ${step}`, 170);
+      doc.text(stepLines, 20, yPos);
+      yPos += (stepLines.length * 6) + 2;
+    });
+
+    doc.save('mediassest-report.pdf');
   };
 
   if (loading) {
@@ -93,10 +172,13 @@ export const AnalysisScreen: React.FC<AnalysisScreenProps> = ({ analysis, loadin
     <div className="pb-32 hero-gradient min-h-full">
       {/* Sticky Top Header */}
       <div className="sticky top-0 z-50 glass-morphism px-6 py-4 flex items-center gap-4 mb-6 shadow-sm border-b border-white/50">
-        <button onClick={() => navigate('/')} className="w-10 h-10 bg-white rounded-xl shadow-sm text-slate-800 flex items-center justify-center border border-slate-100 active:scale-90 transition-transform">
+        <button onClick={() => navigate('/home')} className="w-10 h-10 bg-white rounded-xl shadow-sm text-slate-800 flex items-center justify-center border border-slate-100 active:scale-90 transition-transform">
           <ArrowLeft size={20} />
         </button>
-        <h1 className="text-2xl font-black text-slate-900 leading-tight">AI Insights</h1>
+        <h1 className="text-2xl font-black text-slate-900 leading-tight flex-1 ml-4">AI Insights</h1>
+        <button onClick={handleDownload} className="w-10 h-10 bg-teal-600 text-white rounded-xl shadow-lg shadow-teal-600/20 flex items-center justify-center active:scale-95 transition-transform hover:bg-teal-700">
+          <Download size={20} />
+        </button>
       </div>
 
       <div className="px-6 space-y-10">
@@ -211,8 +293,8 @@ export const AnalysisScreen: React.FC<AnalysisScreenProps> = ({ analysis, loadin
             {chatHistory.map((chat, idx) => (
               <div key={idx} className={`flex ${chat.role === 'user' ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-2`}>
                 <div className={`max-w-[85%] p-5 text-lg font-medium leading-relaxed ${chat.role === 'user'
-                    ? 'bg-slate-900 text-white rounded-[2rem] rounded-tr-none shadow-xl'
-                    : 'bg-white text-slate-800 rounded-[2rem] rounded-tl-none border border-slate-100 shadow-md'
+                  ? 'bg-slate-900 text-white rounded-[2rem] rounded-tr-none shadow-xl'
+                  : 'bg-white text-slate-800 rounded-[2rem] rounded-tl-none border border-slate-100 shadow-md'
                   }`}>
                   {chat.content}
                 </div>
