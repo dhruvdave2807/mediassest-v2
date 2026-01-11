@@ -21,7 +21,8 @@ import {
   Twitter,
   Linkedin,
   Instagram,
-  ArrowRight
+  ArrowRight,
+  Github
 } from 'lucide-react';
 
 
@@ -62,7 +63,7 @@ export const LandingScreen: React.FC = () => {
             <div className="hidden md:flex items-center gap-10 text-sm font-semibold text-slate-600">
               <button onClick={() => scrollToSection('features')} className="hover:text-sky-500 transition-colors">Features</button>
               <button onClick={() => scrollToSection('analytics')} className="hover:text-sky-500 transition-colors">Analytics</button>
-              <button onClick={() => scrollToSection('security')} className="hover:text-sky-500 transition-colors">Security</button>
+              <button onClick={() => scrollToSection('about')} className="hover:text-sky-500 transition-colors">About</button>
               <button
                 onClick={() => scrollToSection('get-started')}
                 className="bg-sky-500 text-white px-7 py-3 rounded-xl hover:bg-sky-600 transition shadow-lg shadow-sky-200 active:scale-95"
@@ -122,7 +123,7 @@ export const LandingScreen: React.FC = () => {
                       <Sparkles className="text-white w-6 h-6" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-slate-800 text-lg">MediBot AI</h4>
+                      <h4 className="font-bold text-slate-800 text-lg">MediAssest</h4>
                       <p className="text-xs text-sky-500 font-bold flex items-center gap-1.5 uppercase tracking-wider">
                         <span className="w-2 h-2 bg-sky-500 rounded-full ai-status-pulse"></span> Analyzing Data
                       </p>
@@ -299,6 +300,68 @@ export const LandingScreen: React.FC = () => {
               </div>
               <div className="flex items-center gap-2 text-white/70 text-sm font-bold">
                 <Zap className="w-4 h-4" /> Instant
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* About Section */}
+      <section id="about" className="py-20 bg-gradient-to-r from-sky-50 to-white relative overflow-hidden">
+        <div className="absolute -top-6 left-6 w-32 h-32 bg-sky-100 rounded-full opacity-50 animate-float blur-2xl"></div>
+        <div className="absolute -bottom-10 right-6 w-44 h-44 bg-blue-100 rounded-full opacity-40 animate-float" style={{ animationDelay: '-2s' }}></div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" data-aos="fade-up">
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <h2 className="text-sky-500 font-black tracking-widest uppercase text-xs mb-4">About</h2>
+            <h3 className="text-3xl font-extrabold text-slate-900 mb-4">Meet the Team</h3>
+            <p className="text-slate-500">People behind the project — click to view profiles.</p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 items-start">
+            {/* Left: Dhruv Dave */}
+            <div data-aos="fade-right">
+              <div className="bg-white p-8 rounded-2xl shadow-lg border border-slate-100">
+                <div className="flex items-center gap-6 mb-6">
+                  <div className="w-20 h-20 rounded-full bg-sky-500 flex items-center justify-center text-white text-xl font-black">DD</div>
+                  <div>
+                    <h4 className="text-xl font-bold text-slate-800">Dhruv Dave</h4>
+                    <p className="text-slate-500">Contributor</p>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center gap-4 mt-4">
+                <a href="https://www.linkedin.com/in/dhruvdave2807/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sky-500 font-bold hover:text-sky-600 transition">
+                  <Linkedin className="w-4 h-4" />
+                  <span>LinkedIn</span>
+                </a>
+                <a href="https://github.com/dhruvdave2807" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-slate-600 font-bold hover:text-slate-800 transition">
+                  <Github className="w-4 h-4" />
+                  <span>GitHub</span>
+                </a>
+              </div>
+            </div>
+
+            {/* Right: Parekh Vivek */}
+            <div data-aos="fade-left">
+              <div className="bg-white p-8 rounded-2xl shadow-lg border border-slate-100 justify-end">
+                <div className="flex items-center gap-6 mb-6 justify-end">
+                  <div className="text-right">
+                    <h4 className="text-xl font-bold text-slate-800">Parekh Vivek</h4>
+                    <p className="text-slate-500">Contributor</p>
+                  </div>
+                  <div className="w-20 h-20 rounded-full bg-sky-500 flex items-center justify-center text-white text-xl font-black">PV</div>
+                </div>
+              </div>
+              <div className="flex items-center gap-4 justify-end mt-4">
+                <a href="https://github.com/vivek-0409" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-slate-600 font-bold hover:text-slate-800 transition">
+                  <span>GitHub</span>
+                  <Github className="w-4 h-4" />
+                </a>
+                <a href="https://www.linkedin.com/in/parekh-vivekkumar-gp-kheda-it-dte-03b3572b6/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sky-500 font-bold hover:text-sky-600 transition">
+                  <span>LinkedIn</span>
+                  <Linkedin className="w-4 h-4" />
+                </a>
               </div>
             </div>
           </div>
