@@ -21,6 +21,12 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ user, language, on
     setIsEditing(false);
   };
 
+  const handleSignOut = () => {
+    // Clear user data and redirect to landing
+    localStorage.clear();
+    navigate('/');
+  };
+
   const sections = [
     { title: 'Privacy & Security', sub: 'Control your vault', icon: Shield, color: 'text-emerald-600 bg-emerald-50' },
     { title: 'Help & Support', sub: 'Guides and FAQ', icon: HelpCircle, color: 'text-sky-600 bg-sky-50' },
@@ -163,7 +169,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ user, language, on
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl translate-x-1/2 -translate-y-1/2"></div>
         </div>
 
-        <button className="w-full h-16 flex items-center justify-center gap-3 text-rose-500 font-black text-xl rounded-[2rem] border-4 border-rose-50 border-dashed hover:bg-rose-50/50 transition-all active:scale-95">
+        <button className="w-full h-16 flex items-center justify-center gap-3 text-rose-500 font-black text-xl rounded-[2rem] border-4 border-rose-50 border-dashed hover:bg-rose-50/50 transition-all active:scale-95" onClick={handleSignOut}>
           <LogOut size={24} />
           Sign Out of Vault
         </button>
